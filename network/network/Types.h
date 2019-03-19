@@ -17,4 +17,10 @@ typedef boost::shared_ptr<IdelChannelInspector> IdelChannelInspectorPtr;
 class Listener;
 typedef boost::shared_ptr<Listener> ListenerPtr;
 
+typedef boost::function<void(const ChannelInitailizerPtr& channelInitailizerPtr)> ChannelActiveCallback;
+typedef boost::function<void(const ChannelInitailizerPtr& channelInitailizerPtr)> ChannelInActiveCallback;
+
+typedef boost::function<void(const NioSocketChannelPtr& channel,ByteBuf)>
+
+
 #endif
