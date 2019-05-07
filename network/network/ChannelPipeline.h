@@ -110,4 +110,6 @@ private:
 	ChannelCloseCallback channelClose_;
 };
 
+typedef boost::shared_ptr<ChannelPipeline> ChannelPipelinePtr;
+
 #endif // !__ChannelPipeline_h__

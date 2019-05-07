@@ -3,8 +3,11 @@
 #include "boost/any.hpp"
 #include "boost/atomic.hpp"
 #include "IdlChanelInspector.h"
+#include "boost/enable_shared_from_this.hpp"
+#include "ChannelPipeline.h"
 
-class NioSocketChannel:boost::noncopyable,
+class NioSocketChannel:
+	boost::noncopyable,
 	public boost::enable_shared_from_this<NioSocketChannel>
 {
 public:
@@ -106,9 +109,73 @@ public:
 
 	void setContext(const boost::any& context)
 	{
-		
+		context_ = context;
 	}
 
+	boost::any* getMutableContext()
+	{
+		return &context_;
+	}
+
+	const boost::any& getContext() const 
+	{
+		return context_;
+	}
+
+	size_t channelId() const 
+	{
+		return id_;
+	}
+
+	const std::string& channelName() const 
+	{
+		return name_;
+	}
+
+	const InetSocketAddress& remote() const 
+	{
+		return remote_;
+	}
+
+	const InetSocketAddress& local() const
+	{
+		return local_;
+	}
+
+	bool isActive() const
+	{
+		return state_ == kActive;
+	}
+
+	NioSocketChannel& option(ChannelOption opt, int optval);
+
+	void write(const void* msg, size_t len);
+	void write(const BufferPtr& buf);
+	void write(const boost::shared_ptr<std::string>& data);
+
+	void write(const void* msg, size_t len, WritePromiseCallback&& cb);
+	void write(const BufferPtr& buf, WritePromiseCallback&& cb);
+	void write(const boost::shared_ptr<std::string>& data, WritePromiseCallback&& cb);
+
+	void writeAndFlush(Bytebuf&& buf);
+	void writeAndFlush(std::string&& data);
+	void writeAndFlush(Builder* buf);
+	void writeAndFlush(std::string* data);
+
+	void writeAndFlush(Bytebuf&& buf,WritePromiseCallback&& cb);
+	void writeAndFlush(std::string&& data, WritePromiseCallback&& cb);
+	void writeAndFlush(Builder* buf, WritePromiseCallback&& cb);
+	void writeAndFlush(std::string* data, WritePromiseCallback&& cb);
+
+	void shutdown();
+	void close();
+	void closeWtihDelay(double seconds);
+
+	void established();
+	void destroyed();
+
+	friend class ChannelPipeline;
+	friend class ChannelEntry;
 
 private:
 	enum ChannelState
@@ -126,8 +193,27 @@ private:
 
 	void setChannelState(ChannelState state)
 	{
-
+		state_ = state;
 	}
+
+	ChannelState channelState() const
+	{
+		return state_;
+	}
+
+	void writeAndFlushInLoop(Buffer* buf, const WritePromiseCallbackPtr& promise);
+	void writeAndFlushInLoop(std::string* data, const WritePromiseCallbackPtr& promise);
+	void writeAndFlushInLoop(const Bytebuf& buf, const WritePromiseCallbackPtr& promise);
+	void writeAndFlushInLoop(const boost::shared_ptr<std::string>& data, const WritePromiseCallbackPtr& promise);
+	
+	void shutdownInLoop();
+	void closeInLoop();
+
+	void handleClose();
+	void handleError(bool invokeWritePromise = false);
+
+	const char* stateToString() const;
+
 
 private:
 	NioEventLoop* eventLoop_;
