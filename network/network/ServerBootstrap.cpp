@@ -2,6 +2,7 @@
 #include "NioSocketChannel.h"
 #include "Listener.h"
 #include "boost/bind.hpp"
+#include <iostream>
 
 ServerBootstrap::ServerBootstrap(NioEventLoop* baseLoop,
 	const std::string& name,
@@ -100,15 +101,60 @@ void ServerBootstrap::start()
 
 void ServerBootstrap::setupChannelHolderMaps()
 {
+	size_t readerIdleSeconds = config_.optionValue(OPT_READIDLEKETIMEOUT);
+	size_t writerIdleSeconds = config_.optionValue(OPT_WRITEIDELETIMEOUT);
+	size_t allIdleSeconds = config_.optionValue(OPT_ALLIDELRTIMEOUT);
 
+	std::cout << "readerIdleSeconds:" << readerIdleSeconds << " writerIdleSeconds:" << writerIdleSeconds << " allIdleSeconds:"<<allIdleSeconds << std::endl;
+
+	std::vector<NioEventLoop*> loops = group_->allLoop();
+	std::for_each(loops.begin(), loops.end(), [&](NioEventLoop*& loop)
+	{
+		IdlChanelInspector inspector(new IdlChanelInspector(loop, readerIdleSeconds, writerIdleSeconds, allIdleSeconds));
+		hodlers_.insert(std::make_pair(loop->threadId(),ThreadPartitionChannelHolder(inspector)));
+	}
+	);
+}
+
+void ServerBootstrap::newChannel(evutil_socket_t sockfd, const InetSocketAddress& remote)
+{
+	NioEventLoop* loop = group_->lightWeighted(NioEventLoop::kAdd);
+	loop->execute(std::move(boost::bind(&ServerBootstrap::newChannelLoop,this,loop,sockfd,remote)));
 }
 
 void ServerBootstrap::newChannelLoop(NioEventLoop* eventLoop, evutil_socket_t socktfd, const InetSocketAddress& remote)
 {
+	std::string peer(std::move(remote.toIpPort()));
+	std::string local(std::move(address_.toIpPort()));
+	char channelName[64] = { 0 };
+	size_t channelId = nextChannelId_++;
+	evutil_snprintf(channelName, sizeof(channelName),"%s<-->%s_/%s#%lu", peer.c_str(), local.c_str(), name_.c_str(), channelId);
 
+	std::cout << "create channel " << channelName << " in thread " << eventLoop->threadId() << std::endl;
+
+	ThreadPartitionChannelHolder& holder = hodlers_[eventLoop->threadId()];
+	NioSocketChannelPtr channel = NioSocketChannel::Builder()
+		.eventLoop(eventLoop)
+		.id(channelId)
+		.name(std::move(std::string(channelName)))
+		.sockfd(socktfd)
+		.remote(remote)
+		.local(address_)
+		.inspector(holder.inspector_.get())
+		.build();
+
+	config_.bind(channel.get());
+	channel->channelCloseCallback(std::move(boost::bind(&ServerBootstrap::removeChannel,this,_1)));
+	initChannel_(ChannelInitailizerPtr(new ChannelInitailizer(channel)));
+
+	holder.channels_.insert(std::move(std:make_pair(channelId,channel)));
+	channel->established();
 }
 
 void ServerBootstrap::removeChannel(const NioSocketChannelPtr& channel)
 {
-
+	NioEventLoop* loop = channel->internalLoop();
+	channel->destroyed();
+	hodlers_[loop->threadId()].channels_.erase(channel->channelId());
+	loop->rebalance(NioEventLoop::kDelete);
 }

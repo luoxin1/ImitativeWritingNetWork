@@ -28,7 +28,7 @@ public:
 	NioEventLoop* next();
 	NioEventLoop* lightWeighted(LoadOption opt);
 	NioEventLoop* specialForHash(size_t hashCode);
-	std::vector<NioEventLoop> allLoop();
+	std::vector<NioEventLoop*> allLoop();
 
 	bool started() const { return started_; }
 	const std::string& name() const { return name_; }

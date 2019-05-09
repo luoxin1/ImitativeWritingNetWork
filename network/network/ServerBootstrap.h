@@ -81,6 +81,7 @@ private:
 	typedef std::map<pid_t, ThreadPartitionChannelHolder> ThreadPartitionChannelHolderMap;
 
 	void setupChannelHolderMaps();
+	void newChannel(evutil_socket_t sockfd, const InetSocketAddress& remote);
 	void newChannelLoop(NioEventLoop* eventLoop, evutil_socket_t socktfd, const InetSocketAddress& remote);
 	void removeChannel(const NioSocketChannelPtr& channel);
 

@@ -94,13 +94,13 @@ public:
 	NioSocketChannel& channelInActiveCallback(const ChannelInActiveCallback& cb);
 	NioSocketChannel& messageCallback(const MessageCallback& cb);
 	NioSocketChannel& idleStateCallback(const IdleStateCallback& cb);
-	NioSocketChannel& channelClostCallback(const ChannelCloseCallback& cb);
+	NioSocketChannel& channelCloseCallback(const ChannelCloseCallback& cb);
 
 	NioSocketChannel& channelActiveCallback(const ChannelActiveCallback&& cb);
 	NioSocketChannel& channelInActiveCallback(const ChannelInActiveCallback&& cb);
 	NioSocketChannel& messageCallback(const MessageCallback&& cb);
 	NioSocketChannel& idleStateCallback(const IdleStateCallback&& cb);
-	NioSocketChannel& channelClostCallback(const ChannelCloseCallback&& cb);
+	NioSocketChannel& channelCloseCallback(const ChannelCloseCallback&& cb);
 
 	NioEventLoop* internalLoop() const
 	{
