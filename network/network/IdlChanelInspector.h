@@ -60,4 +60,6 @@ private:
 	std::vector<BucketTableElement> idleBucketTable_;
 };
 
+typedef boost::shared_ptr<IdlChanelInspector> IdlChanelInspectorPtr;
+
 #endif
