@@ -1,6 +1,7 @@
 #ifndef __NIOEVENTLOOPGROUP_H__
 #define __NioEventLoopGroup_h__
 #include"NioEventLoopThread.h"
+#include"NioEventLoop.h"
 
 class NioEventLoopGroup
 {
@@ -8,15 +9,9 @@ public:
 	typedef NioEventLoop::LoadOption LoadOption;
 	typedef boost::function<void(NioEventLoop* eventLoop)> ThreadInitCallback;
 
-	NioEventLoopGroup()
-	{
+	NioEventLoopGroup(NioEventLoop* baseLoop,const std::string& nameArg,const ThreadInitCallback& cb= ThreadInitCallback());
 
-	}
-
-	~NioEventLoopGroup()
-	{
-
-	}
+	~NioEventLoopGroup();
 
 	void setNumThreads(size_t numThreads)
 	{
@@ -57,4 +52,7 @@ private:
 
 	boost::mutex  mutex_;
 };
+
+typedef boost::shared_ptr<NioEventLoopGroup> NioEventLoopGroupPtr;
+
 #endif

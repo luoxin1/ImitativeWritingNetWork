@@ -3,6 +3,7 @@
 #include "boost/noncopyable.hpp"
 #include "Timestamp.h"
 #include "TimerId.h"
+#include "NioEventLoopGroup.h"
 
 class NioEventLoop:public boost::noncopyable
 {
@@ -78,7 +79,7 @@ public:
 
 		}
 
-		~Unsafe();
+		~Unsafe(){}
 
 		struct event_base* entrieBase() const 
 		{
@@ -96,7 +97,7 @@ private:
 	const pid_t threadId_;
 	struct event_base* base_;
 	NioEventLoopGroup* ownerGroup_;
-
+	const bool isMainLoop_;
 	size_t timeSeq_;
 	boost::atomic_int64_t loadfactor_;
 
