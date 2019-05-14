@@ -2,6 +2,7 @@
 #define __NioEventLoopGroup_h__
 #include"NioEventLoopThread.h"
 #include"NioEventLoop.h"
+#include <vector>
 
 class NioEventLoopGroup
 {

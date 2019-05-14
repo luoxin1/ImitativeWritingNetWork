@@ -25,5 +25,7 @@ private:
 	ThreadInitCallback callback_;
 };
 
+typedef boost::shared_ptr<NioEventLoopGroup> NioEventLoopGroupPtr;
+
 #endif // !__NIOEVENTLOOPTHREAD_H__
 

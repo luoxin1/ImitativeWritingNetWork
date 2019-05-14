@@ -7,6 +7,9 @@
 #include"Types.h"
 #include"ChannelOption.h"
 #include"ByteBuf.h"
+#include<map>
+#include<deque>
+#include"NioSocketChannel.h"
 
 class ChannelPipeline:boost::noncopyable
 	,public boost::enable_shared_from_this<ChannelPipeline>
@@ -85,29 +88,48 @@ public:
 	void idleStateTriggered(const NioSocketChannelPtr& channel, IdleState idleState);
 
 	void close(const NioSocketChannelPtr& channel);
-	void exceptionCaught(const NioSocketChannel& channel, bool invokeWritePromiss);
+	void exceptionCaught(const NioSocketChannelPtr& channel, bool invokeWritePromiss);
 
 	Bytebuf* input() { return &input_; }
 	Bytebuf* output() { return &output_; }
 
 	void pushPromise(const WritePromiseCallbackPtr& writePromise)
 	{
-
+		writePromis_ = writePromise;
 	}
 
 
 private:
+	static void messageReceived(struct bufferevent* be, void* privdata);
+	static void writePromise(struct bufferevent* be, void* privdata);
+	static void eventCaught(struct bufferevent* be, short what, void* privdata);
+
+	void updateIdleChannelEntry(const NioSocketChannelPtr& selfChannel, IdleState ildestate);
+	
+private:
+	typedef std::pair<int, int> OptionPair;
 	Bytebuf input_;
 	Bytebuf output_;
-
-private:
-
 
 	ChannelActiveCallback channelActive_;
 	ChannelInActiveCallback channelInActive_;
 	MessageCallback messageReceived_;
 	IdleStateCallback idleState_;
 	ChannelCloseCallback channelClose_;
+
+	NioEventLoop* eventLoop_;
+	struct bufferevent* underlying_;
+
+	OptionPair readWaterMark_;
+	OptionPair idleStateTimeouts_;
+
+	std::deque<WritePromiseCallbackPtr> writePromis_;
+
+	boost::weak_ptr<ChannelPipeline> self_;
+	boost::weak_ptr<NioSocketChannel> selfChannel_;
+
+	std::map<IdleState, WeakChannelEntryPtr> interestIdles_;
+
 };
 
 typedef boost::shared_ptr<ChannelPipeline> ChannelPipelinePtr;

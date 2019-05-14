@@ -30,7 +30,7 @@ public:
 
 	~IdlChanelInspector();
 
-	void backInsert(const ChannelEntry& channelEntry, IdleState idlState)
+	void backInsert(const ChannelEntryPtr& channelEntry, IdleState idlState)
 	{
 		BucketTableElement& elem = idleBucketTable_[idlState];
 		if (elem.channelList_ && channelEntry->position_!=elem.position_)
