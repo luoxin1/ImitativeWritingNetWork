@@ -42,7 +42,11 @@ public:
 		return *this;
 	}
 
-
+	ChannelPipeline& channelCloseCallback(const ChannelCloseCallback& cb)
+	{
+		channelClose_ = cb;
+		return *this;
+	}
 
 	ChannelPipeline& channelActiveCallback(const ChannelActiveCallback&& cb)
 	{
@@ -65,6 +69,12 @@ public:
 	ChannelPipeline& idleStateCallback(const IdleStateCallback&& cb)
 	{
 		idleState_ = std::move(cb);
+		return *this;
+	}
+
+	ChannelPipeline& channelCloseCallback(const ChannelCloseCallback&& cb)
+	{
+		channelClose_ = std::move(cb);
 		return *this;
 	}
 

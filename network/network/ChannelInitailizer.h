@@ -22,18 +22,48 @@ public:
 
 	void channelActiveCallback(const ChannelActiveCallback& cb) const
 	{
-		//实现回调
+		ownerChannel_->channelActiveCallback(cb);
 	}
 
 	void channelInactiveCallback(const ChannelInActiveCallback& cb) const
 	{
-
+		ownerChannel_->channelInActiveCallback(cb);
 	}
 
-	void messageCallback(const )
+	void messageCallback(const MessageCallback& cb) const
+	{
+		ownerChannel_->messageCallback(cb);
+	}
+
+	void idleStateCallback(const IdleStateCallback& cb) const
+	{
+		ownerChannel_->idleStateCallback(cb);
+	}
+
+	void channelActiveCallback(const ChannelActiveCallback&& cb) const
+	{
+		ownerChannel_->channelActiveCallback(std::move(cb));
+	}
+
+	void channelInactiveCallback(const ChannelInActiveCallback&& cb) const
+	{
+		ownerChannel_->channelInActiveCallback(std::move(cb));
+	}
+
+	void messageCallback(const MessageCallback&& cb) const
+	{
+		ownerChannel_->messageCallback(std::move(cb));
+	}
+
+	void idleStateCallback(const IdleStateCallback&& cb) const
+	{
+		ownerChannel_->idleStateCallback(std::move(cb));
+	}
 
 private:
 	NioSocketChannelPtr ownerChannel_;
 };
+
+typedef boost::shared_ptr< ChannelInitailizer> ChannelInitailizerPtr;
 
 #endif // !

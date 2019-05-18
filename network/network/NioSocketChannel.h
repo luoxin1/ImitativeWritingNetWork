@@ -5,14 +5,23 @@
 #include "IdlChanelInspector.h"
 #include "boost/enable_shared_from_this.hpp"
 #include "ChannelPipeline.h"
+#include "InetSocketAddress.h"
 
 class NioSocketChannel:
 	boost::noncopyable,
 	public boost::enable_shared_from_this<NioSocketChannel>
 {
 public:
-	NioSocketChannel();
 	~NioSocketChannel();
+
+private:
+	NioSocketChannel(NioEventLoop* eventLoo,
+		size_t id,
+		std::string&& name,
+		evutil_socket_t sockfd,
+		InetSocketAddress remote,
+		InetSocketAddress local,
+		IdlChanelInspector* inspector);
 
 public:
 	class Builder
@@ -87,8 +96,6 @@ public:
 		InetSocketAddress local_;
 		IdlChanelInspector inspector_;
 	};
-
-	~NioSocketChannel();
 
 	NioSocketChannel& channelActiveCallback(const ChannelActiveCallback& cb);
 	NioSocketChannel& channelInActiveCallback(const ChannelInActiveCallback& cb);
@@ -185,11 +192,6 @@ private:
 		kActive,
 		kInactiving
 	};
-
-	NioSocketChannel()
-	{
-
-	}
 
 	void setChannelState(ChannelState state)
 	{
