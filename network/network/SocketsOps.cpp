@@ -1,6 +1,6 @@
 #include "SocketsOps.h"
 
-const struct sockaddr* sockets::sockaddr_cast(const struct sockaddr_in6* addr)
+const struct sockaddr* sockets::sockaddr_cast(const struct sockaddr_in* addr)
 {
 	return static_cast<const struct sockaddr*>(implicit_cast<const void*>(addr));
 }

@@ -1,6 +1,8 @@
 #ifndef __INETSOCKETADDRESS_H__
 #define __INETSOCKETADDRESS_H__
 #include<string>
+#include<netinet/in.h>
+#include"SocketsOps.h"
 
 class InetSocketAddress
 {
@@ -8,13 +10,13 @@ public:
 	explicit InetSocketAddress(uint16_t port = 0, bool loopbackOnly = false, bool ipv6 = false);
 	InetSocketAddress(const std::string& ip, uint16_t port, bool ipv6 = false);
 
-	explicit InetSocketAddress(const struct socketaddr_in& addr)
+	explicit InetSocketAddress(const struct sockaddr_in& addr)
 		:addr_(addr)
 	{
 
 	}
 
-	explicit InetSocketAddress(const struct socketaddr_in6& addr6)
+	explicit InetSocketAddress(const struct sockaddr_in6& addr6)
 		:addr6_(addr6)
 	{
 
@@ -47,7 +49,7 @@ public:
 	static bool resolve(const std::string& hostname, InetSocketAddress* out);
 
 private:
-	struct socketaddr_in addr_;
-	struct socketaddr_in6 addr6_;
+	struct sockaddr_in addr_;
+	struct sockaddr_in6 addr6_;
 };
 #endif

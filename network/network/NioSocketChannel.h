@@ -4,8 +4,10 @@
 #include "boost/atomic.hpp"
 #include "IdlChanelInspector.h"
 #include "boost/enable_shared_from_this.hpp"
-#include "ChannelPipeline.h"
 #include "InetSocketAddress.h"
+#include "boost/any.hpp"
+#include"Socket.h"
+#include"Types.h"
 
 class NioSocketChannel:
 	boost::noncopyable,
@@ -33,7 +35,7 @@ public:
 			, name_()
 			, sockfd_(-1)
 			, remote_()
-			, local_()
+			,local_()
 		{
 
 		}
@@ -94,7 +96,7 @@ public:
 		evutil_socket_t sockfd_;
 		InetSocketAddress remote_;
 		InetSocketAddress local_;
-		IdlChanelInspector inspector_;
+		IdlChanelInspector* inspector_;
 	};
 
 	NioSocketChannel& channelActiveCallback(const ChannelActiveCallback& cb);
@@ -157,21 +159,21 @@ public:
 	NioSocketChannel& option(ChannelOption opt, int optval);
 
 	void write(const void* msg, size_t len);
-	void write(const BufferPtr& buf);
+//	void write(const BufferPtr& buf);
 	void write(const boost::shared_ptr<std::string>& data);
 
 	void write(const void* msg, size_t len, WritePromiseCallback&& cb);
-	void write(const BufferPtr& buf, WritePromiseCallback&& cb);
+//	void write(const BufferPtr& buf, WritePromiseCallback&& cb);
 	void write(const boost::shared_ptr<std::string>& data, WritePromiseCallback&& cb);
 
-	void writeAndFlush(Bytebuf&& buf);
+//	void writeAndFlush(Buffer&& buf);
 	void writeAndFlush(std::string&& data);
-	void writeAndFlush(Builder* buf);
+//	void writeAndFlush(Buffer* buf);
 	void writeAndFlush(std::string* data);
 
-	void writeAndFlush(Bytebuf&& buf,WritePromiseCallback&& cb);
+//	void writeAndFlush(Buffer&& buf,WritePromiseCallback&& cb);
 	void writeAndFlush(std::string&& data, WritePromiseCallback&& cb);
-	void writeAndFlush(Builder* buf, WritePromiseCallback&& cb);
+//	void writeAndFlush(Buffer* buf, WritePromiseCallback&& cb);
 	void writeAndFlush(std::string* data, WritePromiseCallback&& cb);
 
 	void shutdown();
@@ -203,9 +205,9 @@ private:
 		return state_;
 	}
 
-	void writeAndFlushInLoop(Buffer* buf, const WritePromiseCallbackPtr& promise);
+//	void writeAndFlushInLoop(Buffer* buf, const WritePromiseCallbackPtr& promise);
 	void writeAndFlushInLoop(std::string* data, const WritePromiseCallbackPtr& promise);
-	void writeAndFlushInLoop(const Bytebuf& buf, const WritePromiseCallbackPtr& promise);
+//	void writeAndFlushInLoop(const  BufferPtr& buf, const WritePromiseCallbackPtr& promise);
 	void writeAndFlushInLoop(const boost::shared_ptr<std::string>& data, const WritePromiseCallbackPtr& promise);
 	
 	void shutdownInLoop();
@@ -233,7 +235,6 @@ private:
 	boost::any context_;
 };
 
-typedef boost::shared_ptr<NioSocketChannel> NioSocketChannelPtr;
 void defaultInitChannel(const NioSocketChannelPtr& channelInitializer);
 
 #endif

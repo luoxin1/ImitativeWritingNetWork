@@ -1,7 +1,7 @@
 #ifndef __TIMESTAMP_H__
 #define __TIMESTAMP_H__
 #include<time.h>
-#include<memory>
+#include<memory.h>
 #include<string>
 
 class Timestamp
@@ -93,7 +93,7 @@ inline int64_t timeDiff(const Timestamp& high, const Timestamp& low)
 inline Timestamp addTime(const Timestamp& timestamp, double& seconds)
 {
 	int64_t delta =static_cast<int64_t>(seconds*Timestamp::kMicroSecondsPerSecond);
-	return Timestamp(timestamp.microSecondsFromUnixEpoch + delta);
+	return Timestamp(timestamp.microSecondsFromUnixEpoch() + delta);
 }
 
 #endif

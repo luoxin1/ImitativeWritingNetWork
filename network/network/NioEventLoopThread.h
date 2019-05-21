@@ -1,7 +1,11 @@
 #ifndef __NIOEVENTLOOPTHREAD_H__
 #define __NIOEVENTLOOPTHREAD_H__
 #include"boost/function.hpp"
-#include"NioEventLoop.h"
+#include"boost/smart_ptr.hpp"
+#include"boost/thread.hpp"
+#include"boost/thread/condition.hpp"
+
+class NioEventLoop;
 
 class NioEventLoopThread
 {
@@ -19,13 +23,11 @@ private:
 
 	NioEventLoop* eventLoop_;
 	bool exiting_;
-	boost::scope_ptr<boost::thread> thread_;
+	boost::scoped_ptr<boost::thread> thread_;
 	mutable boost::mutex mutex_;
 	boost::condition cond_;
 	ThreadInitCallback callback_;
 };
-
-typedef boost::shared_ptr<NioEventLoopGroup> NioEventLoopGroupPtr;
 
 #endif // !__NIOEVENTLOOPTHREAD_H__
 

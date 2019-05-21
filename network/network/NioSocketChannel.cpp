@@ -152,20 +152,20 @@ void NioSocketChannel::write(const void* msg, size_t len)
 	}
 }
 
-void NioSocketChannel::write(const BufferPtr& buf)
-{
-	if (state_==kActive)
-	{
-		if (eventLoop_->inEventLoop())
-		{
-			writeAndFlushInLoop(buf, WritePromiseCallbackPtr());
-		}
-		else
-		{
-			eventLoop_->execute(std::move(boost::bind<void,NioSocketChannel,const BufferPtr&,const WritePromiseCallbackPtr>(&NioSocketChannel::writeAndFlushInLoop,this,buf,WritePromiseCallbackPtr())));
-		}
-	}
-}
+//void NioSocketChannel::write(const BufferPtr& buf)
+//{
+//	if (state_==kActive)
+//	{
+//		if (eventLoop_->inEventLoop())
+//		{
+//			writeAndFlushInLoop(buf, WritePromiseCallbackPtr());
+//		}
+//		else
+//		{
+//			eventLoop_->execute(std::move(boost::bind<void,NioSocketChannel,const BufferPtr&,const WritePromiseCallbackPtr>(&NioSocketChannel::writeAndFlushInLoop,this,buf,WritePromiseCallbackPtr())));
+//		}
+//	}
+//}
 
 void NioSocketChannel::write(const boost::shared_ptr<std::string>& data)
 {
@@ -204,25 +204,25 @@ void NioSocketChannel::write(const void* msg, size_t len, WritePromiseCallback&&
 	}
 }
 
-void NioSocketChannel::write(const BufferPtr& buf, WritePromiseCallback&& cb)
-{
-	if (state_==kActive)
-	{
-		WritePromiseCallbackPtr promise(new WritePromiseCallback(std::move(cb)));
-		if (eventLoop_->inEventLoop())
-		{
-			writeAndFlushInLoop(buf, promise);
-		}
-		else
-		{
-			eventLoop_->execute(std::move(boost::bind<void, NioSocketChannel, const BufferPtr&, const WritePromiseCallbackPtr&>(&NioSocketChannel::writeAndFlushInLoop, this, buf, promise)));
-		}
-	}
-	else
-	{
-		eventLoop_->execute(std::move(boost::bind(std::move(cb), shared_from_this(), false)));
-	}
-}
+//void NioSocketChannel::write(const BufferPtr& buf, WritePromiseCallback&& cb)
+//{
+//	if (state_==kActive)
+//	{
+//		WritePromiseCallbackPtr promise(new WritePromiseCallback(std::move(cb)));
+//		if (eventLoop_->inEventLoop())
+//		{
+//			writeAndFlushInLoop(buf, promise);
+//		}
+//		else
+//		{
+//			eventLoop_->execute(std::move(boost::bind<void, NioSocketChannel, const BufferPtr&, const WritePromiseCallbackPtr&>(&NioSocketChannel::writeAndFlushInLoop, this, buf, promise)));
+//		}
+//	}
+//	else
+//	{
+//		eventLoop_->execute(std::move(boost::bind(std::move(cb), shared_from_this(), false)));
+//	}
+//}
 	
 void NioSocketChannel::write(const boost::shared_ptr<std::string>& data, WritePromiseCallback&& cb)
 {
@@ -244,21 +244,21 @@ void NioSocketChannel::write(const boost::shared_ptr<std::string>& data, WritePr
 	}
 }
 
-void NioSocketChannel::writeAndFlush(Bytebuf&& buf)
-{
-	if (state_ == kActive)
-	{
-		Buffer* safe = new Buffer(std::move(buf));
-		if (eventLoop_->inEventLoop())
-		{
-			writeAndFlushInLoop(safe, WritePromiseCallbackPtr());
-		}
-		else
-		{
-			eventLoop_->execute(std::move(boost::bind<void, NioSocketChannel, Buffer*, const WritePromiseCallbackPtr>(&NioSocketChannel::writeAndFlushInLoop, this, safe, WritePromiseCallbackPtr())));
-		}
-	}
-}
+//void NioSocketChannel::writeAndFlush(Buffer&& buf)
+//{
+//	if (state_ == kActive)
+//	{
+//		Buffer* safe = new Buffer(std::move(buf));
+//		if (eventLoop_->inEventLoop())
+//		{
+//			writeAndFlushInLoop(safe, WritePromiseCallbackPtr());
+//		}
+//		else
+//		{
+//			eventLoop_->execute(std::move(boost::bind<void, NioSocketChannel, Buffer*, const WritePromiseCallbackPtr>(&NioSocketChannel::writeAndFlushInLoop, this, safe, WritePromiseCallbackPtr())));
+//		}
+//	}
+//}
 
 void NioSocketChannel::writeAndFlush(std::string* data)
 {
@@ -276,26 +276,26 @@ void NioSocketChannel::writeAndFlush(std::string* data)
 	}
 }
 
-void NioSocketChannel::writeAndFlush(Bytebuf&& buf, WritePromiseCallback&& cb)
-{
-	if (state_ == kActive)
-	{
-		WritePromiseCallbackPtr promise(new WritePromiseCallback(cb));
-		Buffer* safe = new Buffer(std::move(buf));
-		if (eventLoop_->inEventLoop())
-		{
-			writeAndFlushInLoop(safe, promise);
-		}
-		else
-		{
-			eventLoop_->execute(std::move(boost::bind<void, NioSocketChannel, Buffer*, const WritePromiseCallbackPtr>(&NioSocketChannel::writeAndFlushInLoop, this, safe, WritePromiseCallbackPtr())));
-		}
-	}
-	else
-	{
-		eventLoop_->execute(std::move(boost::bind(std::move(cb),shared_from_this(),false)));
-	}
-}
+//void NioSocketChannel::writeAndFlush(Buffer&& buf, WritePromiseCallback&& cb)
+//{
+//	if (state_ == kActive)
+//	{
+//		WritePromiseCallbackPtr promise(new WritePromiseCallback(cb));
+//		Buffer* safe = new Buffer(std::move(buf));
+//		if (eventLoop_->inEventLoop())
+//		{
+//			writeAndFlushInLoop(safe, promise);
+//		}
+//		else
+//		{
+//			eventLoop_->execute(std::move(boost::bind<void, NioSocketChannel, Buffer*, const WritePromiseCallbackPtr>(&NioSocketChannel::writeAndFlushInLoop, this, safe, WritePromiseCallbackPtr())));
+//		}
+//	}
+//	else
+//	{
+//		eventLoop_->execute(std::move(boost::bind(std::move(cb),shared_from_this(),false)));
+//	}
+//}
 
 void NioSocketChannel::writeAndFlush(std::string&& data, WritePromiseCallback&& cb)
 {
@@ -356,41 +356,41 @@ void NioSocketChannel::writeAndFlush(std::string&& data)
 	}
 }
 	
-void NioSocketChannel::writeAndFlush(Builder* buf)
-{
-	if (state_ == kActive)
-	{
-		Buffer* safe = new Buffer();
-		safe->safe(*buf);
-		std::string* safe = std::string(std::move(data));
-		if (eventLoop_->inEventLoop())
-		{
-			writeAndFlushInLoop(safe, WritePromiseCallbackPtr());
-		}
-		else
-		{
-			eventLoop_->execute(std::move(boost::bind<void, NioSocketChannel, Buffer*, const WritePromiseCallbackPtr&>(&NioSocketChannel::writeAndFlushInLoop, this, safe, WritePromiseCallbackPtr())));
-		}
-	}
-}
+//void NioSocketChannel::writeAndFlush(Buffer* buf)
+//{
+//	if (state_ == kActive)
+//	{
+//		Buffer* safe = new Buffer();
+//		safe->safe(*buf);
+//		std::string* safe = std::string(std::move(data));
+//		if (eventLoop_->inEventLoop())
+//		{
+//			writeAndFlushInLoop(safe, WritePromiseCallbackPtr());
+//		}
+//		else
+//		{
+//			eventLoop_->execute(std::move(boost::bind<void, NioSocketChannel, Buffer*, const WritePromiseCallbackPtr&>(&NioSocketChannel::writeAndFlushInLoop, this, safe, WritePromiseCallbackPtr())));
+//		}
+//	}
+//}
 	
-void NioSocketChannel::writeAndFlush(Builder* buf, WritePromiseCallback&& cb)
-{
-	if (state_ == kActive)
-	{
-		WritePromiseCallbackPtr promise(new WritePromiseCallback(cb));
-		Buffer* safe = new Buffer();
-		safe->safe(*buf);
-		if (eventLoop_->inEventLoop())
-		{
-			writeAndFlushInLoop(safe, promise);
-		}
-		else
-		{
-			eventLoop_->execute(std::move(boost::bind<void, NioSocketChannel, Buffer*, const WritePromiseCallbackPtr&>(&NioSocketChannel::writeAndFlushInLoop, this, safe, WritePromiseCallbackPtr())));
-		}
-	}
-}
+//void NioSocketChannel::writeAndFlush(Buffer* buf, WritePromiseCallback&& cb)
+//{
+//	if (state_ == kActive)
+//	{
+//		WritePromiseCallbackPtr promise(new WritePromiseCallback(cb));
+//		Buffer* safe = new Buffer();
+//		safe->safe(*buf);
+//		if (eventLoop_->inEventLoop())
+//		{
+//			writeAndFlushInLoop(safe, promise);
+//		}
+//		else
+//		{
+//			eventLoop_->execute(std::move(boost::bind<void, NioSocketChannel, Buffer*, const WritePromiseCallbackPtr&>(&NioSocketChannel::writeAndFlushInLoop, this, safe, WritePromiseCallbackPtr())));
+//		}
+//	}
+//}
 	
 void NioSocketChannel::shutdown()
 {
@@ -440,21 +440,21 @@ void NioSocketChannel::destroyed()
 	pipeline_.reset();
 }
 
-void NioSocketChannel::writeAndFlushInLoop(Buffer* buf, const WritePromiseCallbackPtr& promise)
-{
-	if (state_==kInactive)
-	{
-		std::_Count_pr << "channel " << name_ << " inactive when write in it's internal eventloop" << std::endl;
-		(*promise)(shared_from_this(), false);
-		return;
-	}
-	if (promise)
-	{
-		pipeline_->pushPromise(promise);
-	}
-	Bytebuf* output = pipeline_->output();
-	output->appendReference(buf, true);
-}
+//void NioSocketChannel::writeAndFlushInLoop(Buffer* buf, const WritePromiseCallbackPtr& promise)
+//{
+//	if (state_==kInactive)
+//	{
+//		std::_Count_pr << "channel " << name_ << " inactive when write in it's internal eventloop" << std::endl;
+//		(*promise)(shared_from_this(), false);
+//		return;
+//	}
+//	if (promise)
+//	{
+//		pipeline_->pushPromise(promise);
+//	}
+//	Bytebuf* output = pipeline_->output();
+//	output->appendReference(buf, true);
+//}
 	
 void NioSocketChannel::writeAndFlushInLoop(std::string* data, const WritePromiseCallbackPtr& promise)
 {
@@ -472,21 +472,21 @@ void NioSocketChannel::writeAndFlushInLoop(std::string* data, const WritePromise
 	output->appendReference(data, true);
 }
 
-void NioSocketChannel::writeAndFlushInLoop(const Bytebuf& buf, const WritePromiseCallbackPtr& promise)
-{
-	if (state_ == kInactive)
-	{
-		std::_Count_pr << "channel " << name_ << " inactive when write in it's internal eventloop" << std::endl;
-		(*promise)(shared_from_this(), false);
-		return;
-	}
-	if (promise)
-	{
-		pipeline_->pushPromise(promise);
-	}
-	Bytebuf* output = pipeline_->output();
-	output->appendReference(buf);
-}
+//void NioSocketChannel::writeAndFlushInLoop(const BufferPtr& buf, const WritePromiseCallbackPtr& promise)
+//{
+//	if (state_ == kInactive)
+//	{
+//		std::_Count_pr << "channel " << name_ << " inactive when write in it's internal eventloop" << std::endl;
+//		(*promise)(shared_from_this(), false);
+//		return;
+//	}
+//	if (promise)
+//	{
+//		pipeline_->pushPromise(promise);
+//	}
+//	Bytebuf* output = pipeline_->output();
+//	output->appendReference(buf);
+//}
 
 void NioSocketChannel::writeAndFlushInLoop(const boost::shared_ptr<std::string>& data, const WritePromiseCallbackPtr& promise)
 {

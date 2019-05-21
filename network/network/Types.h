@@ -1,7 +1,8 @@
 #ifndef __TYPES_H__
 #define __TYPES_H__
 #include "boost/function.hpp"
-#include"ByteBuf.h"
+#include"Timestamp.h"
+#include"Bytebuf.h"
 #include"boost/shared_ptr.hpp"
 
 enum IdleState
@@ -18,6 +19,7 @@ typedef boost::function<void(const ChannelInitailizerPtr& channelInitailizer)> C
 
 class NioSocketChannel;
 typedef boost::shared_ptr<NioSocketChannel> NioSocketChannelPtr;
+typedef boost::weak_ptr<NioSocketChannel> WeakNioSocketChannelPtr;
 
 class IdelChannelInspector;
 typedef boost::shared_ptr<IdelChannelInspector> IdelChannelInspectorPtr;
@@ -36,6 +38,7 @@ typedef boost::function<void(const NioSocketChannelPtr& channel)> ChannelCloseCa
 typedef boost::function<void(const NioSocketChannelPtr& channel, bool success)> WritePromiseCallback;
 typedef boost::shared_ptr<WritePromiseCallback> WritePromiseCallbackPtr;
 
-typedef boost::bad_weak_ptr<NioSocketChannel> WeakNioSocketChannelPtr;
+class ChannelPipeline;
+typedef boost::shared_ptr<ChannelPipeline> ChannelPipelinePtr;
 
 #endif

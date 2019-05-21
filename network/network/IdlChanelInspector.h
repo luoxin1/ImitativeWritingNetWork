@@ -2,6 +2,9 @@
 #define __IDLCHANELINSPECTOR_H__
 #include <vector>
 #include "Types.h"
+#include"boost/unordered_set.hpp"
+#include"boost/circular_buffer.hpp"
+
 
 struct ChannelEntry
 {

@@ -1,8 +1,10 @@
 #ifndef __NIOEVENTLOOPGROUP_H__
 #define __NioEventLoopGroup_h__
-#include"NioEventLoopThread.h"
-#include"NioEventLoop.h"
 #include <vector>
+#include"boost/function.hpp"
+#include"NioEventLoop.h"
+
+class NioEventLoopThread;
 
 class NioEventLoopGroup
 {

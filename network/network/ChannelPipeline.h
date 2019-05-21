@@ -2,14 +2,14 @@
 #define __CHANNELPIPELINE_H__
 #include"boost/noncopyable.hpp"
 #include"boost/enable_shared_from_this.hpp"
-#include"NioEventLoop.h"
 #include"event2/event.h"
-#include"Types.h"
 #include"ChannelOption.h"
 #include"ByteBuf.h"
 #include<map>
 #include<deque>
-#include"NioSocketChannel.h"
+#include"Types.h"
+#include"NioEventLoop.h"
+#include"IdlChanelInspector.h"
 
 class ChannelPipeline:boost::noncopyable
 	,public boost::enable_shared_from_this<ChannelPipeline>
@@ -105,7 +105,7 @@ public:
 
 	void pushPromise(const WritePromiseCallbackPtr& writePromise)
 	{
-		writePromis_ = writePromise;
+		writePromis_.push_back(writePromise);
 	}
 
 
@@ -142,6 +142,5 @@ private:
 
 };
 
-typedef boost::shared_ptr<ChannelPipeline> ChannelPipelinePtr;
 
 #endif // !__ChannelPipeline_h__

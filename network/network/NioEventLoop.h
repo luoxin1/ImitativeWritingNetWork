@@ -3,7 +3,11 @@
 #include "boost/noncopyable.hpp"
 #include "Timestamp.h"
 #include "TimerId.h"
-#include "NioEventLoopGroup.h"
+#include"boost/function.hpp"
+#include"boost/atomic.hpp"
+#include"CurrentThread.h"
+
+class NioEventLoopGroup;
 
 class NioEventLoop:public boost::noncopyable
 {
