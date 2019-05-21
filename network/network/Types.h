@@ -41,4 +41,6 @@ typedef boost::shared_ptr<WritePromiseCallback> WritePromiseCallbackPtr;
 class ChannelPipeline;
 typedef boost::shared_ptr<ChannelPipeline> ChannelPipelinePtr;
 
+class Buffer;
+typedef boost::shared_ptr<Buffer> BufferPtr;
 #endif
