@@ -1,13 +1,26 @@
-#include "InetSocketAddress.h"
 #include "boost/static_assert.hpp"
+#include "InetSocketAddress.h"
+#include <assert.h>
+#include <netdb.h>
+#include <strings.h> 
+#include <netinet/in.h>
+#include<iostream>
+#include"Endian.h"
 
 static const in_addr_t kInaddrLoopback = INADDR_LOOPBACK;
 static const in_addr_t kInaddrAny = INADDR_ANY;
 
+//BOOST_STATIC_ASSERTT(sizeof(InetSocketAddress) == sizeof(struct sockaddr_in6));
+//BOOST_STATIC_ASSERT(offsetof(sockaddr_in,sin_family)==0);
+//BOOST_STATIC_ASSERT(offsetof(sockaddr_in6,sin6_family)==0);
+//BOOST_STATIC_ASSERT(offsetof(sockaddr_in,sin_port)==2);
+//BOOST_STATIC_ASSERT(offsetof(sockaddr_in6,sin6_port)==2);
+
+
 InetSocketAddress::InetSocketAddress(uint16_t port , bool loopbackOnly , bool ipv6)
 {
-	BOOST_STATIC_ASSERT(offsetof(InetSocketAddress, addr6_) == 0);
-	BOOST_STATIC_ASSERT(offsetof(InetSocketAddress, addr_) == 0);
+//	BOOST_STATIC_ASSERT(offsetof(InetSocketAddress, addr6_) == 0);
+//	BOOST_STATIC_ASSERT(offsetof(InetSocketAddress, addr_) == 0);
 
 	if (ipv6)
 	{
@@ -19,10 +32,10 @@ InetSocketAddress::InetSocketAddress(uint16_t port , bool loopbackOnly , bool ip
 	}
 	else
 	{
-		bzero(addr_, sizeof(addr_));
+		bzero(&addr_, sizeof(addr_));
 		addr_.sin_family = AF_INET;
-		in_addr_t ip = loopbackOnly ? kInaddrLoopback ? kInaddrAny;
-		addr_.sin_addr.s_s_addr = sockets::hostToNetwork32(ip);
+		in_addr_t ip = loopbackOnly ? kInaddrLoopback : kInaddrAny;
+		addr_.sin_addr.s_addr = sockets::hostToNetwork32(ip);
 		addr_.sin_port = sockets::hostToNetwork16(port);
 	}
 }
@@ -37,7 +50,7 @@ InetSocketAddress::InetSocketAddress(const std::string& ip, uint16_t port, bool 
 	else
 	{
 		bzero(&addr_, sizeof(addr_));
-		sockets::fromIpPort(ip.c_str(), port, &addr6);
+		sockets::fromIpPort(ip.c_str(), port, &addr_);
 	}
 }
 
@@ -59,13 +72,13 @@ std::string InetSocketAddress::toIpPort() const
 
 uint16_t InetSocketAddress::toPort() const
 {
-	return sockets::newworkToHost16(portNetEndian());
+	return sockets::networkToHost16(portNetEndian());
 }
 
 
 uint32_t InetSocketAddress::ipNetEndian() const
 {
-	assert(family() = AF_INET);
+	assert(family() == AF_INET);
 	return addr_.sin_addr.s_addr;
 }
 
@@ -73,8 +86,8 @@ uint32_t InetSocketAddress::ipNetEndian() const
 bool InetSocketAddress::resolve(const std::string& hostname, InetSocketAddress* out)
 {
 	char t_resolveBuffer[64 * 1024];
-	struct hosten hent;
-	struct hosten* he = NULL;
+	struct hostent hent;
+	struct hostent* he = NULL;
 	int herro = 0;
 	bzero(&hent, sizeof(hent));
 	int ret = gethostbyname_r(hostname.c_str(), &hent, t_resolveBuffer, sizeof(t_resolveBuffer), &he, &herro);

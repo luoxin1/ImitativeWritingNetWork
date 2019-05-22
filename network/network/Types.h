@@ -2,7 +2,7 @@
 #define __TYPES_H__
 #include "boost/function.hpp"
 #include"Timestamp.h"
-#include"Bytebuf.h"
+#include"ByteBuf.h"
 #include"boost/shared_ptr.hpp"
 
 enum IdleState
@@ -28,8 +28,8 @@ typedef boost::shared_ptr<IdelChannelInspector> IdelChannelInspectorPtr;
 class Listener;
 typedef boost::shared_ptr<Listener> ListenerPtr;
 
-typedef boost::function<void(const ChannelInitailizerPtr& channelInitailizerPtr)> ChannelActiveCallback;
-typedef boost::function<void(const ChannelInitailizerPtr& channelInitailizerPtr)> ChannelInActiveCallback;
+typedef boost::function<void(const NioSocketChannelPtr& channelInitailizerPtr)> ChannelActiveCallback;
+typedef boost::function<void(const NioSocketChannelPtr& channelInitailizerPtr)> ChannelInActiveCallback;
 
 typedef boost::function<void(const NioSocketChannelPtr& channel, Bytebuf& input, Timestamp timestamp)> MessageCallback;
 typedef boost::function<void(const NioSocketChannelPtr& channel, IdleState idleState)> IdleStateCallback;
@@ -39,8 +39,10 @@ typedef boost::function<void(const NioSocketChannelPtr& channel, bool success)> 
 typedef boost::shared_ptr<WritePromiseCallback> WritePromiseCallbackPtr;
 
 class ChannelPipeline;
+class Connector;
+struct ChannelEntry;
+class IdleChannelInspector;
+
 typedef boost::shared_ptr<ChannelPipeline> ChannelPipelinePtr;
 
-class Buffer;
-typedef boost::shared_ptr<Buffer> BufferPtr;
 #endif

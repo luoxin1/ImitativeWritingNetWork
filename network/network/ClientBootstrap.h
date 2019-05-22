@@ -5,6 +5,9 @@
 #include "InetSocketAddress.h"
 #include "Connector.h"
 #include "IdlChanelInspector.h"
+#include"ChannelOption.h"
+#include"ChannelConfig.h"
+#include "boost/thread.hpp"
 
 class ClientBootstrap :boost::noncopyable
 {
@@ -34,8 +37,8 @@ public:
 		return *this;
 	}
 
-	ClientBootstrap& option(ChannelOption opt, bool on);
-	ClientBootstrap& option(ChannelOption opt, int optvalue);
+	ClientBootstrap& option(ChannelOption opt,bool on);
+	ClientBootstrap& option(ChannelOption opt,int optvalue);
 
 	NioSocketChannelPtr channel() const
 	{

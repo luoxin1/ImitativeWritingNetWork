@@ -1,12 +1,13 @@
 #ifndef __NIOEVENTLOOP_H__
 #define __NIOEVENTLOOP_H__
-#include "boost/noncopyable.hpp"
 #include "Timestamp.h"
 #include "TimerId.h"
-#include"boost/function.hpp"
 #include"boost/atomic.hpp"
 #include"CurrentThread.h"
+#include "boost/function.hpp"
+#include "boost/noncopyable.hpp"
 
+struct event_base;
 class NioEventLoopGroup;
 
 class NioEventLoop:public boost::noncopyable

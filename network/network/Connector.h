@@ -5,6 +5,8 @@
 #include "boost/function.hpp"
 #include "NioEventLoop.h"
 #include "InetSocketAddress.h"
+#include "event2/util.h"
+#include<event.h>
 
 class ChannelConfig;
 class Connector:boost::noncopyable
@@ -71,10 +73,11 @@ private:
 	int retryDelaMs_;
 
 	ConnectState state_;
-	struct bufferevent *be_;
+	struct bufferevent* be_;
 	NewChannelCallback newChannel_;
 
 };
+
 typedef boost::shared_ptr<Connector> ConnectorPtr;
 
 #endif

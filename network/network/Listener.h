@@ -1,13 +1,15 @@
 #ifndef __LISTENER_H__
 #define __LISTENER_H__
 #include "boost/noncopyable.hpp"
-#include "NioEventLoop.h"
 #include "ChannelConfig.h"
 #include "boost/function.hpp"
 #include "event2/util.h"
 #include "boost/atomic.hpp"
 #include "InetSocketAddress.h"
 #include "ChannelOption.h"
+
+class NioEventLoop;
+class ChannelConfig;
 
 class Listener:boost::noncopyable
 {
@@ -43,7 +45,8 @@ private:
 	struct evconnlistener* listener_;
 	int devnull_;
 private:
-	static void newChannel(struct evconnlistener* listener, evutil_socket_t sockfd, struct socketaddr* address, int socklen, void* privadata);
+	static void newChannel(struct evconnlistener* listener, evutil_socket_t sockfd, struct sockaddr* address, int socklen, void* privadata);
+        static void exceptionCaught(struct evconnlistener* listener,void* privdata);
 };
 typedef boost::shared_ptr<Listener> ListenerPtr;
 #endif

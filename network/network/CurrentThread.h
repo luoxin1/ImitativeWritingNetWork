@@ -1,11 +1,18 @@
 #ifndef __CURRENTTHREAD_H__
 #define __CURRENTTHREAD_H__
+#include<sys/types.h>
+#include <unistd.h>
+#include <sys/prctl.h>
+#include <sys/syscall.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <time.h>
 
 namespace CurrentThread
 {
-    extern const __thread pid_t t_cachedTid;
-    extern const __thread char  t_tidString[32];
-    extern const __thread int t_tidStringLength;
+    extern __thread pid_t t_cachedTid;
+    extern __thread char  t_tidString[32];
+    extern __thread int t_tidStringLength;
     
     void cacheTid();
     void sleepUsec(int64_t usec);
@@ -34,7 +41,6 @@ namespace CurrentThread
         return tid()==::getpid();
     }
     
-   
 }
 
 

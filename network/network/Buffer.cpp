@@ -1,4 +1,8 @@
 #include "Buffer.h"
+#include<string.h>
+#include<memory.h>
+#include "event2/event.h"
+#include<event.h>
 
 Buffer::Buffer()
 	:buffer_(NULL)
@@ -71,7 +75,7 @@ Buffer::Buffer(const Buffer&& rhs)
 	, readIndex_(rhs.readIndex_)
 	, notAlloc_(rhs.notAlloc_)
 {
-	rhs.buffer_ = NULL;
+    memcpy(buffer_,rhs.buffer_,rhs.capacity_);
 }
 
 Buffer& Buffer::operator=(const Buffer&& rhs)
@@ -90,7 +94,7 @@ Buffer& Buffer::operator=(const Buffer&& rhs)
 		beginIndex_ = rhs.beginIndex_;
 		readIndex_ = rhs.readIndex_;
 		notAlloc_ = rhs.notAlloc_;
-		rhs.buffer_ = NULL;
+		memcpy(buffer_,rhs.buffer_,rhs.capacity_);
 	}
 
 	return *this;
@@ -241,12 +245,12 @@ void Buffer::append(const void* data, size_t size)
 	if (size>0)
 	{
 		reallocate(size + dataSize_);
-		memcpy(buffer_ + beginIndex_ + dataSize_, data, data);
+		memcpy(buffer_ + beginIndex_ + dataSize_, data, size);
 		dataSize_ += size;
 	}
 }
 
-void Buffer::append(struct evbuffer* data, size_t size, bool sustain = false)
+void Buffer::append(struct evbuffer* data, size_t size, bool sustain)
 {
 	if (size > 0)
 	{

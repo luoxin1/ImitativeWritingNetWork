@@ -1,5 +1,9 @@
 #ifndef __BUFFER_H__
 #define __BUFFER_H__
+#include<cstddef>
+#include<string>
+#include<assert.h>
+#include"boost/smart_ptr.hpp"
 
 #define DATA_LACK -1
 #define DATA_ERROR -2
@@ -12,7 +16,7 @@ class Buffer
 {
 public:
 	Buffer();
-	Buffer(size_t initSize, bool sustain = false);
+	Buffer(size_t initSize,bool sustain=false);
 	Buffer(const Buffer& rhs);
 	Buffer& operator=(const Buffer& rhs);
 
@@ -46,7 +50,7 @@ public:
 
 	bool empty() const
 	{
-		return buffer_ == NULL || dataSize == 0;
+		return buffer_ == NULL || dataSize_== 0;
 	}
 
 	void discard(size_t len);
@@ -101,7 +105,7 @@ public:
 	void appendInt16(int16_t x) { append(&x, sizeof(x)); }
 	void appendInt32(int32_t x) { append(&x, sizeof(x)); }
 	void appendInt64(int64_t x) { append(&x, sizeof(x)); }
-	void appendBuffer(const Buffer& buf){append(buf.data(), buf.size);}
+	void appendBuffer(const Buffer& buf){append(buf.data(), buf.size());}
 
 private:
 	size_t reallocate(size_t requestSize);
@@ -120,4 +124,6 @@ private:
 
 	bool notAlloc_;
 };
+
+typedef boost::shared_ptr<Buffer> BufferPtr;
 #endif

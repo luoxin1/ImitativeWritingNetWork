@@ -3,6 +3,7 @@
 #include"IdlChanelInspector.h"
 #include<iostream>
 #include"event2/bufferevent.h"
+#include"NioSocketChannel.h"
 
 ChannelPipeline::ChannelPipeline(NioEventLoop* eventLoop, evutil_socket_t sockfd, int flag)
 	:eventLoop_(eventLoop)
@@ -60,7 +61,7 @@ void ChannelPipeline::tie(const NioSocketChannelPtr& selfChannel)
 {
 	self_ = shared_from_this();
 	selfChannel_ = selfChannel;
-	std::for_each(interestIdles_.begin(), interestIdles_.end(), [&selfChannel](std::pair<const IdleState, WeakNioSocketChannelPtr>& it)
+	std::for_each(interestIdles_.begin(), interestIdles_.end(), [&selfChannel](std::pair<const IdleState, WeakChannelEntryPtr>& it)
 	{
 		ChannelEntryPtr entry(new ChannelEntry(selfChannel, it.first));
 		it.second = entry;
@@ -106,17 +107,17 @@ void ChannelPipeline::disableAll()
 
 bool ChannelPipeline::isReading()
 {
-	return bufferevent_get_enable(underlying_)& EV_READ;
+	return bufferevent_get_enabled(underlying_)& EV_READ;
 }
 
 bool ChannelPipeline::isWritting()
 {
-	return bufferevent_get_enable(underlying_)& EV_WRITE;
+	return bufferevent_get_enabled(underlying_)& EV_WRITE;
 }
 
 bool ChannelPipeline::isNonEvent()
 {
-	return bufferevent_get_enable(underlying_) == 0;
+	return bufferevent_get_enabled(underlying_) == 0;
 }
 
 void ChannelPipeline::channelActive(const NioSocketChannelPtr& channel)
@@ -159,7 +160,7 @@ void ChannelPipeline::messageReceived(struct bufferevent* be, void* privdata)
 	if (self)
 	{
 		NioSocketChannelPtr selfChannel(self->selfChannel_.lock());
-		self->messageReceived_(selfChannel, self->input, self->eventLoop_->pollReturnTime());
+		self->messageReceived_(selfChannel, self->input_, self->eventLoop_->pollReturnTime());
 
 		self->updateIdleChannelEntry(selfChannel, ALL_IDLE);
 		self->updateIdleChannelEntry(selfChannel, READ_IDLE);

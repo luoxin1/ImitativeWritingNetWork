@@ -1,5 +1,11 @@
 #ifndef __BYTEBUF_H__
 #define __BYTEBUF_H__
+#include"Buffer.h"
+#include<string>
+#include<event.h>
+#include "boost/noncopyable.hpp"
+
+
 class Bytebuf :private boost::noncopyable
 {
 public:
@@ -20,7 +26,7 @@ public:
 		assert(evbuffer_ != NULL);
 	}
 
-	Bytebuf(const Bytebuf&& rhs)
+	Bytebuf(Bytebuf&& rhs)
 		:alloc_(rhs.alloc_)
 		,evbuffer_(rhs.evbuffer_)
 	{
@@ -31,7 +37,7 @@ public:
 	{
 		if (alloc_&& evbuffer_!=NULL)
 		{
-			evebuffer_free(evbuffer_);
+			evbuffer_free(evbuffer_);
 		}
 	}
 
@@ -208,7 +214,7 @@ public:
 		evbuffer_add_buffer_reference(evbuffer_, safe.evbuffer_);
 	}
 
-	void appendReference(str::string* data, bool collect = false) const
+	void appendReference(std::string* data, bool collect = false) const
 	{
 		std::string* ref = data;
 		if (!collect)
@@ -266,11 +272,11 @@ private:
 	template<typename T>
 	static void evbuffer_ref_clean_cb(const void* data, size_t dataLen, void* garbage)
 	{
-		T* ref = static_cast<T>(garbage);
+		T* ref = static_cast<T*>(garbage);
 		delete ref;
 	}
 private:
 	bool alloc_;
-	struct evbufer* evbuffer_;
+	struct evbuffer* evbuffer_;
 };
 #endif

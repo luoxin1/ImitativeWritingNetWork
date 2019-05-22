@@ -1,5 +1,8 @@
 #include "ClientBootstrap.h"
 #include "ChannelOption.h"
+#include"NioSocketChannel.h"
+#include<iostream>
+#include"ChannelInitailizer.h"
 
 void safeRemoveChannel(NioEventLoop* eventLoop,const NioSocketChannelPtr& channel)
 {
@@ -43,7 +46,7 @@ ClientBootstrap::~ClientBootstrap()
 	if (channel)
 	{
 		assert(eventLoop_ == channel->internalLoop());
-		ChannelInitCallback cb = std::move(boost::bind(&safeRemoveChannel,eventLoop_,_1));
+		ChannelCloseCallback cb = std::move(boost::bind(&safeRemoveChannel,eventLoop_,_1));
 		eventLoop_->execute(std::move(boost::bind(&setChannelCloseCallback,channel,cb)));
 		if (unique)
 		{
@@ -92,7 +95,7 @@ void ClientBootstrap::connect()
 	size_t readerIdleSeconds = config_.optionValue(OPT_READIDLEKETIMEOUT);
 	size_t writerIdleSeconds = config_.optionValue(OPT_WRITEIDELETIMEOUT);
 	size_t readerall= config_.optionValue(OPT_ALLIDELRTIMEOUT);
-	inspector_->reset(new IdlChanelInspector(eventLoop_, readerIdleSeconds, writerIdleSeconds, readerIdleSeconds));
+	inspector_.reset(new IdlChanelInspector(eventLoop_, readerIdleSeconds, writerIdleSeconds, readerIdleSeconds));
 
 
 	connector_->connect();
@@ -148,7 +151,7 @@ void ClientBootstrap::removeChannel(const NioSocketChannelPtr& channel)
 	channel->destroyed();
 	{
 		boost::lock_guard<boost::mutex> lock(mtx_);
-		channel.reset();
+		channel_.reset();
 	}
 	if (retry_)
 	{

@@ -159,21 +159,21 @@ public:
 	NioSocketChannel& option(ChannelOption opt, int optval);
 
 	void write(const void* msg, size_t len);
-//	void write(const BufferPtr& buf);
+	void write(const BufferPtr& buf);
 	void write(const boost::shared_ptr<std::string>& data);
 
 	void write(const void* msg, size_t len, WritePromiseCallback&& cb);
-//	void write(const BufferPtr& buf, WritePromiseCallback&& cb);
+	void write(const BufferPtr& buf, WritePromiseCallback&& cb);
 	void write(const boost::shared_ptr<std::string>& data, WritePromiseCallback&& cb);
 
-//	void writeAndFlush(Buffer&& buf);
+	void writeAndFlush(Buffer&& buf);
 	void writeAndFlush(std::string&& data);
-//	void writeAndFlush(Buffer* buf);
+	void writeAndFlush(Buffer* buf);
 	void writeAndFlush(std::string* data);
 
-//	void writeAndFlush(Buffer&& buf,WritePromiseCallback&& cb);
+	void writeAndFlush(Buffer&& buf,WritePromiseCallback&& cb);
 	void writeAndFlush(std::string&& data, WritePromiseCallback&& cb);
-//	void writeAndFlush(Buffer* buf, WritePromiseCallback&& cb);
+	void writeAndFlush(Buffer* buf, WritePromiseCallback&& cb);
 	void writeAndFlush(std::string* data, WritePromiseCallback&& cb);
 
 	void shutdown();
@@ -205,9 +205,9 @@ private:
 		return state_;
 	}
 
-//	void writeAndFlushInLoop(Buffer* buf, const WritePromiseCallbackPtr& promise);
+	void writeAndFlushInLoop(Buffer* buf, const WritePromiseCallbackPtr& promise);
 	void writeAndFlushInLoop(std::string* data, const WritePromiseCallbackPtr& promise);
-//	void writeAndFlushInLoop(const  BufferPtr& buf, const WritePromiseCallbackPtr& promise);
+	void writeAndFlushInLoop(const  BufferPtr& buf, const WritePromiseCallbackPtr& promise);
 	void writeAndFlushInLoop(const boost::shared_ptr<std::string>& data, const WritePromiseCallbackPtr& promise);
 	
 	void shutdownInLoop();
@@ -235,6 +235,6 @@ private:
 	boost::any context_;
 };
 
-void defaultInitChannel(const NioSocketChannelPtr& channelInitializer);
+void defaultInitChannel(const ChannelInitailizerPtr& channelInitailizer);
 
 #endif

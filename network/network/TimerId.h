@@ -6,6 +6,13 @@ class Functor;
 class TimerId
 {
 public:
+    TimerId()
+    :sequence_(0)
+    ,event_(NULL)
+    ,privdata_(NULL)
+    {        
+        
+    }
 	TimerId(size_t sequence,struct event* e,Functor* privdata=NULL)
 		:sequence_()
 		,event_(e)

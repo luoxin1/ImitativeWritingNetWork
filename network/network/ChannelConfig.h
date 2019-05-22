@@ -1,13 +1,20 @@
 #ifndef __CHANNELCONFIG_H__
 #define __CHANNELCONFIG_H__
 #include "ChannelOption.h"
-#include "Listener.h"
 #include <map>
+#include<vector>
+#include"Socket.h"
+
+class NioSocketChannel;
+class Listener;
 
 class ChannelConfig
 {
 public:
 	ChannelConfig()
+        :listenerOps_()
+        ,channelOps_()
+        ,nativeSockOps_()
 	{
 
 	}
@@ -47,14 +54,14 @@ private:
 		{
 
 		}
-
-		typedef std::vector<OpetionValue> ChannelOptionList;
-
-		ChannelOptionList listenerOps_;
-		ChannelOptionList channelOps_;
-		ChannelOptionList nativeSockOps_;
-
-		std::map<ChannelOption, int> cacheOps_;
 	};
+        
+        typedef std::vector<OpetionValue> ChannelOptionList;
+
+	ChannelOptionList listenerOps_;
+	ChannelOptionList channelOps_;
+	ChannelOptionList nativeSockOps_;
+
+	std::map<ChannelOption, int> cacheOps_;
 };
 #endif

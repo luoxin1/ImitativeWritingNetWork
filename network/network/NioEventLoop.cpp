@@ -1,7 +1,12 @@
+#include <signal.h>
+#include <execinfo.h>
+#include <sys/stat.h>
+#include <sys/resource.h>
 #include "NioEventLoop.h"
 #include "Functor.h"
 #include"event2/util.h"
 #include"event2/event.h"
+#include<iostream>
 
 __thread NioEventLoop* t_loopInThisThread = NULL;
 
@@ -10,8 +15,8 @@ void changeLimit()
 	struct rlimit r;
 	r.rlim_cur = RLIM_INFINITY;
 	r.rlim_max = RLIM_INFINITY;
-	settlimit(RLIMIT_NOFILE, &r);
-	settlimit(RLIMIT_CORE, &r);
+	setrlimit(RLIMIT_NOFILE, &r);
+	setrlimit(RLIMIT_CORE, &r);
 }
 
 void sigterm_cb(evutil_socket_t signo,short event,void* privdata)
@@ -27,7 +32,7 @@ void sigsegv_cb(evutil_socket_t signo, short event, void* privdata)
 	evsignal_del(e);
 	void* array[100];
 	char** strings;
-	signal(signo, SIG_DEL);
+	signal(signo, SIG_DFL);
 	size_t size = backtrace(array, 100);
 	strings = backtrace_symbols(array, size);
 	if (strings!=NULL)
@@ -50,14 +55,13 @@ void sigsegv_cb(evutil_socket_t signo, short event, void* privdata)
 
 void setupSignalHandlers(struct event_base* base)
 {
-	signal(SIGTOUT, SIG_IGN);
+	signal(SIGTTOU, SIG_IGN);
 	signal(SIGTTIN, SIG_IGN);
 	signal(SIGTSTP, SIG_IGN);
 	signal(SIGHUP, SIG_IGN);
 	signal(SIGPIPE, SIG_IGN);
 	signal(SIGABRT, SIG_IGN);
 	signal(SIGBUS, SIG_IGN);
-	signal(SIGTOUT, SIG_IGN);
 	struct event *term = evsignal_new(base, SIGTERM, sigterm_cb, event_self_cbarg());
 	assert(term != NULL);
 	struct event *segv = evsignal_new(base, SIGSEGV, sigsegv_cb, event_self_cbarg());
@@ -128,7 +132,7 @@ Timestamp NioEventLoop::pollReturnTime()
 	struct timeval tv;
 	if (event_base_gettimeofday_cached(base_, &tv) != 0)
 	{
-		evutil_gettimeofday(&tv, NULL);//函数用来获取系统时间
+		evutil_gettimeofday(&tv, NULL);//锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷取系统时锟斤拷
 	}
 	return Timestamp(tv);
 }
@@ -250,7 +254,7 @@ size_t NioEventLoop::rebalance(LoadOption option)
 	default:
 		break;
 	}
-	std::_Count_pr << "after rebalance " << "(eventloop in thread " << threadId_ << ")" << " load factor is " << loadfactor_ << std::endl;
+	std::cout << "after rebalance " << "(eventloop in thread " << threadId_ << ")" << " load factor is " << loadfactor_ << std::endl;
 	return loadfactor_;
 }
 
@@ -270,5 +274,5 @@ NioEventLoop* NioEventLoop::getEventLoopOfCurrentThread()
 
 void NioEventLoop::abortNotInLoopThread()
 {
-	std::_Count_pr << "eventloop(" << this << ") was create in thread " << threadId_ << ",current in thread " << CurrentThread::tid() << std::endl;
+	std::cout << "eventloop(" << this << ") was create in thread " << threadId_ << ",current in thread " << CurrentThread::tid() << std::endl;
 }

@@ -1,5 +1,7 @@
 #include"IdlChanelInspector.h"
 #include"ChannelPipeline.h"
+#include "NioSocketChannel.h"
+#include "boost/bind.hpp"
 
 ChannelEntry::ChannelEntry(const NioSocketChannelPtr& channel, IdleState idleState)
 	:channel_(channel)
@@ -17,7 +19,7 @@ ChannelEntry::~ChannelEntry()
 		ChannelPipelinePtr pipleline = channel->pipeline_;
 		if (pipleline)
 		{
-			channel->idleStateTrigger(channel, idleState_);
+			pipleline->idleStateTriggered(channel, idleState_);
 		}
 	}
 }
@@ -34,19 +36,19 @@ IdlChanelInspector::IdlChanelInspector(NioEventLoop* eventLoop,
 	if (readerIdlSeconds > 0)
 	{
 		idleBucketTable_[READ_IDLE].channelList_.reset(new WeakChannelList());
-		idleBucketTable_[READ_IDLE].channelList_.resize(readerIdlSeconds);
+		idleBucketTable_[READ_IDLE].channelList_->resize(readerIdlSeconds);
 		idleBucketTable_[READ_IDLE].position_=readerIdlSeconds-1;
 	}
 	if (writeIdlSeconds>0)
 	{
 		idleBucketTable_[READ_IDLE].channelList_.reset(new WeakChannelList());
-		idleBucketTable_[READ_IDLE].channelList_.resize(writeIdlSeconds);
+		idleBucketTable_[READ_IDLE].channelList_->resize(writeIdlSeconds);
 		idleBucketTable_[READ_IDLE].position_ = writeIdlSeconds - 1;
 	}
 	if (allIdleSeconds>0)
 	{
 		idleBucketTable_[READ_IDLE].channelList_.reset(new WeakChannelList());
-		idleBucketTable_[READ_IDLE].channelList_.resize(allIdleSeconds);
+		idleBucketTable_[READ_IDLE].channelList_->resize(allIdleSeconds);
 		idleBucketTable_[READ_IDLE].position_ = allIdleSeconds - 1;
 	}
 	inspectId_ = eventLoop->schedualEvery(boost::bind(&IdlChanelInspector::inspect, this), 1.0);

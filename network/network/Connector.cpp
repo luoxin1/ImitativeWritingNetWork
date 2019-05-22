@@ -1,14 +1,13 @@
 #include "Connector.h"
 #include "boost/bind.hpp"
 #include <iostream>
-
-static const int kInitRetryDelayMs = 500;
-static const int kMaxRetryDelayMs = 30000;
+#include "event2/bufferevent.h"
+#include"ChannelConfig.h"
 
 #define BUFFEREVENT_RELEASE(be)\
 	do\
 	{\
-		if()\
+		if(be!=NULL)\
 		{\
 			bufferevent_free(be);\
 			be=NULL;\
@@ -26,7 +25,10 @@ static const int kMaxRetryDelayMs = 30000;
 				evutil_closesocket(sockfd);\
 			}\
 		}\
-	} while (false);
+	} while (false)
+
+static const int kInitRetryDelayMs = 500;
+static const int kMaxRetryDelayMs = 30000;
 
 Connector::Connector(NioEventLoop* eventLoop, ChannelConfig* config, const InetSocketAddress& remote)
 	:eventLoop_(eventLoop)
@@ -80,7 +82,7 @@ void Connector::retryAfter()
 	setConnectState(KDisconnected);
 	if (connect_)
 	{
-		eventLoop_->scheduleOnce(std::move(boost::bind(&Connector::connectInLoop,shared_from_this(),retryDelaMs_/1000)));
+		eventLoop_->scheduleOnce(std::move(boost::bind(&Connector::connectInLoop,shared_from_this())),retryDelaMs_/1000);
 		retryDelaMs_ = std::min(retryDelaMs_ * 2, kMaxRetryDelayMs);
 	}
 }
@@ -92,7 +94,7 @@ void Connector::connectInLoop()
 	bufferevent_setcb(be_, NULL, NULL, &Connector::eventCaught, reinterpret_cast<void*>(this));
 	struct sockaddr* remote =const_cast<struct sockaddr*>(remote_.toSockAddress());
 	config_->bind(bufferevent_getfd(be_));
-	bufferevent_socket_connect(be_, remote_, sizeof(struct sockaddr_in));
+	bufferevent_socket_connect(be_, remote, sizeof(struct sockaddr_in));
 }
 	
 void Connector::disconnectInLoop()
@@ -145,10 +147,10 @@ void Connector::eventCaught(struct bufferevent* be, short what, void* privdata)
 	{
 		evutil_socket_t sockfd = bufferevent_getfd(self->be_);
 		evutil_make_socket_closeonexec(sockfd);
-		BUFFEREVENT_RELEASE(be_);
+		BUFFEREVENT_RELEASE(self->be_);
 		if (self->newChannel_)
 		{
-			self->newChannel_(sockfd);
+                    self->newChannel_(sockfd);
 		}
 
 	}

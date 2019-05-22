@@ -4,7 +4,9 @@
 #include "Types.h"
 #include"boost/unordered_set.hpp"
 #include"boost/circular_buffer.hpp"
-
+#include "boost/noncopyable.hpp"
+#include"TimerId.h"
+#include"NioEventLoop.h"
 
 struct ChannelEntry
 {
