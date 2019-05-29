@@ -1,4 +1,5 @@
 #include "NioEventLoopThread.h"
+#include"NioEventLoop.h"
 
 NioEventLoopThread::NioEventLoopThread(const ThreadInitCallback& cb)
 	:eventLoop_(NULL)
@@ -18,7 +19,7 @@ NioEventLoopThread::~NioEventLoopThread()
 
 NioEventLoop* NioEventLoopThread::startThread()
 {
-	thread_.reset(new boost::thread(boost::bind(NioEventLoopThread::threadFunc, this)));
+	thread_.reset(new boost::thread(boost::bind(&NioEventLoopThread::threadFunc, this)));
 	{
 		boost::unique_lock<boost::mutex> lock(mutex_);
 		while (eventLoop_==NULL)

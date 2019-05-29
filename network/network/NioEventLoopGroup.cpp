@@ -9,8 +9,8 @@ NioEventLoopGroup::NioEventLoopGroup(NioEventLoop* baseLoop, const std::string& 
 	,started_(false)
 	,next_(0)
 	,threads_()
-	,loops_(),
-	mutex_()
+	,loops_()
+	,mutex_()
 {
 	assert(baseLoop_ != NULL);
 }
@@ -28,7 +28,7 @@ void NioEventLoopGroup::start()
 
 	for (size_t i=0;i<numThreads_;++i)
 	{
-		NioEventLoopThreadPtr t(NioEventLoopThread(threadInit_));
+		NioEventLoopThreadPtr t(new NioEventLoopThread(threadInit_));
 		threads_.push_back(t);
 
 		NioEventLoop* loop = t->startThread();

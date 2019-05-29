@@ -3,6 +3,8 @@
 #include "Listener.h"
 #include "boost/bind.hpp"
 #include <iostream>
+#include"IdlChanelInspector.h"
+#include"ChannelInitailizer.h"
 
 ServerBootstrap::ServerBootstrap(NioEventLoop* baseLoop,
 	const std::string& name,
@@ -41,7 +43,7 @@ ServerBootstrap::~ServerBootstrap()
 }
 
 
-ServerBootstrap& ServerBootstrap::group(const boost::shared_ptr<NioEventLoop>& group)
+ServerBootstrap& ServerBootstrap::group(const boost::shared_ptr<NioEventLoopGroup>& group)
 {
 	group_ = group;
 	return *this;
@@ -84,7 +86,7 @@ void ServerBootstrap::start()
 	started_ = true;
 	if (!group_)
 	{
-		group_.reset(new NioEventLoop(baseLoop_, "internalGroup"));
+		group_.reset(new NioEventLoopGroup(baseLoop_, "internalGroup"));
 	}
 	if (!group_->started())
 	{
@@ -94,7 +96,7 @@ void ServerBootstrap::start()
 	setupChannelHolderMaps();
 
 	config_.bind(lister_.get());
-	lister_->newChannelCallback(std::move(boost::bind(&ServerBootstrap::newChannelLoop,this,_1,_2)));
+	lister_->newChannelCallback(std::move(boost::bind(&ServerBootstrap::newChannel,this,_1,_2)));
 	baseLoop_->execute(std::move(boost::bind(&Listener::listen,get_pointer(lister_),address_)));
 }
 
@@ -110,8 +112,8 @@ void ServerBootstrap::setupChannelHolderMaps()
 	std::vector<NioEventLoop*> loops = group_->allLoop();
 	std::for_each(loops.begin(), loops.end(), [&](NioEventLoop*& loop)
 	{
-		IdlChanelInspector inspector(new IdlChanelInspector(loop, readerIdleSeconds, writerIdleSeconds, allIdleSeconds));
-		hodlers_.insert(std::make_pair(loop->threadId(),ThreadPartitionChannelHolder(inspector)));
+		IdlChanelInspectorPtr inspector(new IdlChanelInspector(loop, readerIdleSeconds, writerIdleSeconds, allIdleSeconds));
+                hodlers_.insert(std::make_pair(loop->threadId(),ThreadPartitionChannelHolder(inspector)));
 	}
 	);
 }
@@ -147,7 +149,7 @@ void ServerBootstrap::newChannelLoop(NioEventLoop* eventLoop, evutil_socket_t so
 	channel->channelCloseCallback(std::move(boost::bind(&ServerBootstrap::removeChannel,this,_1)));
 	initChannel_(ChannelInitailizerPtr(new ChannelInitailizer(channel)));
 
-	holder.channels_.insert(std::move(std:make_pair(channelId,channel)));
+	holder.channels_.insert(std::move(std::make_pair(channelId,channel)));
 	channel->established();
 }
 

@@ -2,7 +2,8 @@
 #include"SocketsOps.h"
 #include<netinet/tcp.h>
 #include<netinet/in.h>
-
+#include<memory.h>
+#include<stdio.h>
 
 Socket::~Socket()
 {
@@ -19,7 +20,7 @@ bool Socket::getTcpInfo(struct tcp_info* info) const
 bool Socket::getTcpInfoString(char* buf,int len) const
 {
     struct tcp_info tcpi;
-    bool res = getTcpInfo(tcpi);
+    bool res = getTcpInfo(&tcpi);
     if(res)
     {
         snprintf(buf, len, "unrecovered=%u "

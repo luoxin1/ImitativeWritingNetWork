@@ -1,13 +1,16 @@
 #ifndef __NIOSOCKETCHANNEL_H__
 #define __NIOSOCKETCHANNEL_H__
+#include <functional>
 #include "boost/any.hpp"
 #include "boost/atomic.hpp"
+#include "boost/bind.hpp"
 #include "IdlChanelInspector.h"
 #include "boost/enable_shared_from_this.hpp"
 #include "InetSocketAddress.h"
 #include "boost/any.hpp"
 #include"Socket.h"
 #include"Types.h"
+#include"ChannelOption.h"
 
 class NioSocketChannel:
 	boost::noncopyable,

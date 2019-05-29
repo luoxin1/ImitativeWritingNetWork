@@ -6,6 +6,7 @@
 #include "Functor.h"
 #include"event2/util.h"
 #include"event2/event.h"
+#include"event2/thread.h"
 #include<iostream>
 
 __thread NioEventLoop* t_loopInThisThread = NULL;
@@ -68,6 +69,8 @@ void setupSignalHandlers(struct event_base* base)
 	assert(segv!= NULL);
 }
 
+boost::atomic_bool NioEventLoop::setupReactorContext(false);
+boost::atomic_uint64_t NioEventLoop::loopIndex(0);
 
 NioEventLoop::NioEventLoop()
 	:index_(loopIndex++)
@@ -87,7 +90,7 @@ NioEventLoop::NioEventLoop()
 	}
 	if (t_loopInThisThread!=NULL)
 	{
-		std::cout << "another eventloop" << t_loopInThisThread << " is in this thread " << thread_ << std::endl;
+		std::cout << "another eventloop" << t_loopInThisThread << " is in this thread " << threadId_ << std::endl;
 		abort();
 	}
 	else
@@ -105,15 +108,15 @@ NioEventLoop::NioEventLoop()
 
 NioEventLoop::~NioEventLoop()
 {
-	std::_Count_pr << "eventloop of thread " << threadId_ << " destructed in thread " << CurrentThread::tid() << std::endl;
+	std::cout << "eventloop of thread " << threadId_ << " destructed in thread " << CurrentThread::tid() << std::endl;
 	event_base_free(base_);
 	t_loopInThisThread = NULL;
 }
 
 void NioEventLoop::loop()
 {
-	event_base_loop(base_, EVENT_NO_EXIT_ON_EMPTY);
-	std::_Count_pr << "eventloop of thread " << threadId_ << " start looping..." << std::endl;
+	event_base_loop(base_, EVLOOP_NO_EXIT_ON_EMPTY);
+	std::cout << "eventloop of thread " << threadId_ << " start looping..." << std::endl;
 }
 
 void NioEventLoop::shutdownGracefully(Timestamp time)
@@ -127,7 +130,7 @@ void NioEventLoop::shutdownGracefully(Timestamp time)
 	std::cout << "eventloop of thread " << threadId_ << " stop after " << time.secondsFromUnixEpoch() << " seconds..." << std::endl;
 }
 
-Timestamp NioEventLoop::pollReturnTime()
+Timestamp NioEventLoop::pollReturnTime() const
 {
 	struct timeval tv;
 	if (event_base_gettimeofday_cached(base_, &tv) != 0)
@@ -146,7 +149,7 @@ void NioEventLoop::execute(const NioTask& task)
 	else
 	{
 		Functor* fn = new Functor(task);
-		event_base_once(base_, -1, EV_TIMEOUT, &Functor::execute, reinterpret_cast<void*>(fn), NULL);
+		event_base_once(base_, -1, EV_TIMEOUT, &Functor::excute, reinterpret_cast<void*>(fn), NULL);
 	}
 }
 
@@ -159,26 +162,26 @@ void NioEventLoop::execute(NioTask&& task)
 	else
 	{
 		Functor* fn = new Functor(std::move(task));
-		event_base_once(base_, -1, EV_TIMEOUT, &Functor::execute, reinterpret_cast<void*>(fn), NULL);
+		event_base_once(base_, -1, EV_TIMEOUT, &Functor::excute, reinterpret_cast<void*>(fn), NULL);
 	}
 }
 
 void NioEventLoop::scheduleOnce(const NioTask& task, double defferdTime)
 {
 	Functor* fn = new Functor(task);
-	event_base_once(base_, -1, EV_TIMEOUT, &Functor::execute, reinterpret_cast<void*>(fn), &(Timestamp(defferdTime*Timestamp::kMicroSecondsPerSecond).toTimeval()));
+	event_base_once(base_, -1, EV_TIMEOUT, &Functor::excute, reinterpret_cast<void*>(fn), &(Timestamp(defferdTime*Timestamp::kMicroSecondsPerSecond).toTimeval()));
 }
 
 void NioEventLoop::schedualOnce(NioTask&& task, double defferedTime)
 {
 	Functor* fn = new Functor(std::move(task));
-	event_base_once(base_, -1, EV_TIMEOUT, &Functor::execute, reinterpret_cast<void*>(fn), &(Timestamp(defferdTime*Timestamp::kMicroSecondsPerSecond).toTimeval()));
+	event_base_once(base_, -1, EV_TIMEOUT, &Functor::excute, reinterpret_cast<void*>(fn), &(Timestamp(defferedTime*Timestamp::kMicroSecondsPerSecond).toTimeval()));
 }
 
 TimerId NioEventLoop::schedualAt(const NioTask& task, Timestamp time)
 {
 	Functor* fn = new Functor(task);
-	struct event* ev = event_new(base_, -1, EV_TIMEOUT, &Functor::execute, reinterpret_cast<void*>(fn));
+	struct event* ev = event_new(base_, -1, EV_TIMEOUT, &Functor::excute, reinterpret_cast<void*>(fn));
 	assert(ev != NULL);
 	event_add(ev, &(Timestamp(timeDiff(time, Timestamp::now())).toTimeval()));
 
@@ -188,7 +191,7 @@ TimerId NioEventLoop::schedualAt(const NioTask& task, Timestamp time)
 TimerId NioEventLoop::schedualAfter(const NioTask& task, double delay)
 {
 	Functor* fn = new Functor(task);
-	struct event* ev = event_new(base_, -1, EV_TIMEOUT, &Functor::execute, reinterpret_cast<void*>(fn));
+	struct event* ev = event_new(base_, -1, EV_TIMEOUT, &Functor::excute, reinterpret_cast<void*>(fn));
 	assert(ev != NULL);
 	event_add(ev, &(Timestamp(delay*Timestamp::kMicroSecondsPerSecond).toTimeval()));
 
@@ -198,7 +201,7 @@ TimerId NioEventLoop::schedualAfter(const NioTask& task, double delay)
 TimerId NioEventLoop::schedualEvery(const NioTask& task, double interval)
 {
 	Functor* fn = new Functor(task);
-	struct event* ev = event_new(base_, -1, EV_PERSIST, &Functor::execute, reinterpret_cast<void*>(fn));
+	struct event* ev = event_new(base_, -1, EV_PERSIST, &Functor::excute, reinterpret_cast<void*>(fn));
 	assert(ev != NULL);
 	event_add(ev, &(Timestamp(interval*Timestamp::kMicroSecondsPerSecond).toTimeval()));
 
@@ -208,7 +211,7 @@ TimerId NioEventLoop::schedualEvery(const NioTask& task, double interval)
 TimerId NioEventLoop::schedualAt(const NioTask&& task, Timestamp time)
 {
 	Functor* fn = new Functor(std::move(task));
-	struct event* ev = event_new(base_, -1, EV_TIMEOUT, &Functor::execute, reinterpret_cast<void*>(fn));
+	struct event* ev = event_new(base_, -1, EV_TIMEOUT, &Functor::excute, reinterpret_cast<void*>(fn));
 	assert(ev != NULL);
 	event_add(ev, &(Timestamp(timeDiff(time, Timestamp::now())).toTimeval()));
 
@@ -218,7 +221,7 @@ TimerId NioEventLoop::schedualAt(const NioTask&& task, Timestamp time)
 TimerId NioEventLoop::schedualAfter(const NioTask&& task, double delay)
 {
 	Functor* fn = new Functor(std::move(task));
-	struct event* ev = event_new(base_, -1, EV_TIMEOUT, &Functor::execute, reinterpret_cast<void*>(fn));
+	struct event* ev = event_new(base_, -1, EV_TIMEOUT, &Functor::excute, reinterpret_cast<void*>(fn));
 	assert(ev != NULL);
 	event_add(ev, &(Timestamp(delay*Timestamp::kMicroSecondsPerSecond).toTimeval()));
 
@@ -228,7 +231,7 @@ TimerId NioEventLoop::schedualAfter(const NioTask&& task, double delay)
 TimerId NioEventLoop::schedualEvery(const NioTask&& task, double interval)
 {
 	Functor* fn = new Functor(std::move(task));
-	struct event* ev = event_new(base_, -1, EV_PERSIST, &Functor::execute, reinterpret_cast<void*>(fn));
+	struct event* ev = event_new(base_, -1, EV_PERSIST, &Functor::excute, reinterpret_cast<void*>(fn));
 	assert(ev != NULL);
 	event_add(ev, &(Timestamp(interval*Timestamp::kMicroSecondsPerSecond).toTimeval()));
 

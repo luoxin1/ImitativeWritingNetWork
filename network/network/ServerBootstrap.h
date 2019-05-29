@@ -41,7 +41,7 @@ public:
 		return address_;
 	}
 
-	ServerBootstrap& group(const boost::shared_ptr<NioEventLoop>& group);
+	ServerBootstrap& group(const boost::shared_ptr<NioEventLoopGroup>& group);
 
 	ServerBootstrap& chanelInitCallback(const ChannelInitCallback& cb)
 	{
@@ -62,9 +62,11 @@ public:
 
 private:
 	typedef boost::unordered_map<size_t, NioSocketChannelPtr> channelMap;
-	struct ThreadPartitionChannelHolder
+	
+        
+        struct ThreadPartitionChannelHolder
 	{
-		IdelChannelInspectorPtr inspector_;
+		IdlChanelInspectorPtr inspector_;
 		channelMap channels_;
 
 		ThreadPartitionChannelHolder()
@@ -72,7 +74,7 @@ private:
 			,channels_()
 		{}
 
-		ThreadPartitionChannelHolder(const IdelChannelInspectorPtr& inspector)
+		ThreadPartitionChannelHolder(const IdlChanelInspectorPtr& inspector)
 			:inspector_(inspector)
 			, channels_()
 		{}

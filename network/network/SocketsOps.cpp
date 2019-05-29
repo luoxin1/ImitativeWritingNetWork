@@ -1,28 +1,34 @@
 #include "SocketsOps.h"
+#include <sys/socket.h>
+#include "boost/implicit_cast.hpp"
+#include<iostream>
+#include <string.h>
+#include"Endian.h"
+#include<assert.h>
 
 const struct sockaddr* sockets::sockaddr_cast(const struct sockaddr_in* addr)
 {
-	return static_cast<const struct sockaddr*>(implicit_cast<const void*>(addr));
+	return static_cast<const struct sockaddr*>(boost::implicit_cast<const void*>(addr));
 }
 
-struct sockaddr* sockets::sockaddr_cast(const struct sockaddr_in6* addr)
+const struct sockaddr* sockets::sockaddr_cast(const struct sockaddr_in6* addr)
 {
-	return static_cast<struct sockaddr*>(implicit_cast<void*>(addr));
+	return static_cast<const struct sockaddr*>(boost::implicit_cast<const void*>(addr));
 }
 
-const struct sockaddr* sockets::sockaddr_cast(const struct sockaddr_in* addr)
+struct sockaddr* sockets::sockaddr_cast(struct sockaddr_in6* addr)
 {
-	return static_cast<const struct sockaddr*>(implicit_cast<const void*>(addr));
+	return static_cast<struct sockaddr*>(boost::implicit_cast<void*>(addr));
 }
 
 const struct sockaddr_in* sockets::sockaddr_in_cast(const struct sockaddr* addr)
 {
-	return static_cast<const struct sockaddr*>(implicit_cast<const void*>(addr));
+	return static_cast<const struct sockaddr_in*>(boost::implicit_cast<const void*>(addr));
 }
 
 const struct sockaddr_in6* sockets::sockaddr_in6_cast(const struct sockaddr* addr)
 {
-	return static_cast<const struct sockaddr_in6*>(implicit_cast<const void*>(addr));
+	return static_cast<const struct sockaddr_in6*>(boost::implicit_cast<const void*>(addr));
 }
 
 void sockets::setOption(int fd, int opt, int level, int optval)
@@ -56,7 +62,7 @@ void sockets::toIpPort(char* buf, size_t size, const struct sockaddr* addr)
 	snprintf(buf + end, size - end, ":%u", port);
 }
 
-void sockets::toIp(char* buf, size_t, const struct sockaddr* addr)
+void sockets::toIp(char* buf, size_t size, const struct sockaddr* addr)
 {
 	if (addr->sa_family==AF_INET)
 	{
@@ -74,9 +80,9 @@ void sockets::toIp(char* buf, size_t, const struct sockaddr* addr)
 
 void sockets::fromIpPort(const char* ip, uint16_t port, struct sockaddr_in* addr)
 {
-	addr->sin_addr = AF_INET;
+	addr->sin_family= AF_INET;
 	addr->sin_port = hostToNetwork16(port);
-	if (inet_pton(AF_INET,ip,&addr->sin_addr<=0))
+	if (inet_pton(AF_INET,ip,&addr->sin_addr) <=0 )
 	{
 		std::cout << "socket::fromIpPort" << std::endl;
 	}
@@ -84,9 +90,9 @@ void sockets::fromIpPort(const char* ip, uint16_t port, struct sockaddr_in* addr
 
 void sockets::fromIpPort(const char* ip, uint16_t port, struct sockaddr_in6* addr)
 {
-	addr->sin6_addr = AF_INET6;
+	addr->sin6_family = AF_INET6;
 	addr->sin6_port = hostToNetwork16(port);
-	if (inet_pton(AF_INET6, ip, &addr->sin_addr <= 0))
+	if (inet_pton(AF_INET6, ip, &addr->sin6_addr) <= 0)
 	{
 		std::cout << "socket::fromIpPort" << std::endl;
 	}	
@@ -97,7 +103,7 @@ struct sockaddr_in6 sockets::getLocalAddress(int sockfd)
 	struct sockaddr_in6 local;
 	bzero(&local, sizeof(local));
 	socklen_t addrlen = static_cast<socklen_t>(sizeof(local));
-	if (getsockname(sockfd, sockaddr_cast(&local), addrlen) < 0)
+	if (getsockname(sockfd, sockaddr_cast(&local), &addrlen) < 0)
 	{
 		std::cout << "sockets::getLocalAddress" << std::endl;
 	}

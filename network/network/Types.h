@@ -21,8 +21,8 @@ class NioSocketChannel;
 typedef boost::shared_ptr<NioSocketChannel> NioSocketChannelPtr;
 typedef boost::weak_ptr<NioSocketChannel> WeakNioSocketChannelPtr;
 
-class IdelChannelInspector;
-typedef boost::shared_ptr<IdelChannelInspector> IdelChannelInspectorPtr;
+class IdlChanelInspector;
+typedef boost::shared_ptr<IdlChanelInspector> IdlChanelInspectorPtr;
 
 
 class Listener;

@@ -15,6 +15,7 @@ public:
         :listenerOps_()
         ,channelOps_()
         ,nativeSockOps_()
+		, kIncalidOptval(0)
 	{
 
 	}
@@ -33,13 +34,13 @@ public:
 	void bind(evutil_socket_t sockfd) const;
 
 private:
-	struct OpetionValue
+	struct OptionValue
 	{
 		int opt_;
 		int level_;
 		int optval_;
 
-		OpetionValue()
+		OptionValue()
 			:opt_(0)
 			,level_(0)
 			,optval_(0)
@@ -47,7 +48,7 @@ private:
 
 		}
 
-		OpetionValue(int opt, int level, int optval)
+		OptionValue(int opt, int level, int optval)
 			:opt_(opt)
 			, level_(level)
 			, optval_(optval)
@@ -56,12 +57,14 @@ private:
 		}
 	};
         
-        typedef std::vector<OpetionValue> ChannelOptionList;
+        typedef std::vector<OptionValue> ChannelOptionList;
 
 	ChannelOptionList listenerOps_;
 	ChannelOptionList channelOps_;
 	ChannelOptionList nativeSockOps_;
 
 	std::map<ChannelOption, int> cacheOps_;
+
+	const int kIncalidOptval;
 };
 #endif

@@ -1,4 +1,5 @@
 #include "Timestamp.h"
+#include <sys/time.h>
 
 std::string Timestamp::toString() const
 {
@@ -14,7 +15,7 @@ std::string Timestamp::toFormattedString(bool showMicroseconds ) const
 	char buf[32] = { 0 };
 	time_t seconds = static_cast<int64_t>(timeval_.tv_sec);
 	struct tm t;
-	gmtime(&seconds, &t);
+	gmtime_r(&seconds, &t);
 	if (!showMicroseconds)
 	{
 		snprintf(buf, sizeof(buf), "%04d%02d%02d %02d:%02d:%02d", t.tm_year+1900,t.tm_mon+1,t.tm_mday, t.tm_hour, t.tm_min, t.tm_sec);

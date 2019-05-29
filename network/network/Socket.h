@@ -1,6 +1,7 @@
 #ifndef __SOCKET_H__
 #define __SOCKET_H__
 #include"event2/util.h"
+#include "boost/noncopyable.hpp"
 
 class Socket:boost::noncopyable
 {

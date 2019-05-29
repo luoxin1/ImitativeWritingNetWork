@@ -1,8 +1,10 @@
 #ifndef __NIOEVENTLOOPGROUP_H__
 #define __NioEventLoopGroup_h__
 #include <vector>
+#include<queue>
 #include"boost/function.hpp"
 #include"NioEventLoop.h"
+#include "boost/thread/mutex.hpp"
 
 class NioEventLoopThread;
 
@@ -39,12 +41,12 @@ private:
 
 	typedef boost::shared_ptr<NioEventLoopThread> NioEventLoopThreadPtr;
 	typedef std::vector<NioEventLoop*> NioEventLoopList;
-	typedef std::priority_queue<NioEventLoop* NioEventLoopList, Balance> NioEventLoopPriorityQueue;
+	typedef std::priority_queue<NioEventLoop* ,NioEventLoopList, Balance> NioEventLoopPriorityQueue;
 
 	NioEventLoop* baseLoop_;
 
 	const std::string name_;
-	const ThreadCallback threadInit_;
+	const ThreadInitCallback threadInit_;
 
 	size_t numThreads_;
 

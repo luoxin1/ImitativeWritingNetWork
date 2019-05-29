@@ -5,8 +5,8 @@
 #include "InetSocketAddress.h"
 #include "Connector.h"
 #include "IdlChanelInspector.h"
-#include"ChannelOption.h"
 #include"ChannelConfig.h"
+#include"ChannelOption.h"
 #include "boost/thread.hpp"
 
 class ClientBootstrap :boost::noncopyable

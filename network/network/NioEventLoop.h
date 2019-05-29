@@ -6,6 +6,7 @@
 #include"CurrentThread.h"
 #include "boost/function.hpp"
 #include "boost/noncopyable.hpp"
+#include "boost/atomic.hpp"
 
 struct event_base;
 class NioEventLoopGroup;
@@ -104,7 +105,7 @@ private:
 	NioEventLoopGroup* ownerGroup_;
 	const bool isMainLoop_;
 	size_t timeSeq_;
-	boost::atomic_int64_t loadfactor_;
+	boost::atomic_uint64_t loadfactor_;
 
 	static boost::atomic_bool setupReactorContext;
 	static boost::atomic_uint64_t loopIndex;

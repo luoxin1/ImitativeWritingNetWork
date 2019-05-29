@@ -6,6 +6,7 @@
 
 class Functor:boost::noncopyable
 {
+public:
 	typedef boost::function<void()> InternalCallback;
 
 	Functor(const InternalCallback& callback, bool persist = false);

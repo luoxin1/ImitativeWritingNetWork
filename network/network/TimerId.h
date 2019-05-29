@@ -1,5 +1,6 @@
 #ifndef __TIMERID_H__
 #define __TIMERID_H__
+#include<stdio.h>
 
 class Functor;
 
