@@ -437,7 +437,7 @@ void NioSocketChannel::closeWtihDelay(double seconds)
 	if (state_ == kActive || state_ == kInactiving)
 	{
 		setChannelState(kInactiving);
-		eventLoop_->schedualOnce(makeWeakCallback(shared_from_this(),&NioSocketChannel::close), seconds);
+		eventLoop_->scheduleOnce(makeWeakCallback(shared_from_this(),&NioSocketChannel::close), seconds);
 	}
 }
 

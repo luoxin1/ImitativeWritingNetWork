@@ -87,10 +87,10 @@ inline bool operator==(const Timestamp& lhs, const Timestamp& rhs)
 
 inline int64_t timeDiff(const Timestamp& high, const Timestamp& low)
 {
-	high.microSecondsFromUnixEpoch() - low.microSecondsFromUnixEpoch();
+	return high.microSecondsFromUnixEpoch() - low.microSecondsFromUnixEpoch();
 }
 
-inline Timestamp addTime(const Timestamp& timestamp, double& seconds)
+inline Timestamp addTime(const Timestamp& timestamp, double seconds)
 {
 	int64_t delta =static_cast<int64_t>(seconds*Timestamp::kMicroSecondsPerSecond);
 	return Timestamp(timestamp.microSecondsFromUnixEpoch() + delta);

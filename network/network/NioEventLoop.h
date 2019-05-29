@@ -36,14 +36,14 @@ public:
 	void execute(NioTask&& task);
 
 	void scheduleOnce(const NioTask& task, double defferdTime);
-	void schedualOnce(NioTask&& task, double defferedTime);
+	void scheduleOnce(NioTask&& task, double defferedTime);
 
 	TimerId schedualAt(const NioTask& task, Timestamp time);
 	TimerId schedualAfter(const NioTask& task, double delay);
 	TimerId schedualEvery(const NioTask& task, double interval);
 
-	TimerId schedualAt(const NioTask&& task, Timestamp time);
-	TimerId schedualAfter(const NioTask&& task, double delay);
+	TimerId schedualAt(NioTask&& task, Timestamp time);
+	TimerId schedualAfter(NioTask&& task, double delay);
 	TimerId schedualEvery(const NioTask&& task, double interval);
 
 	void cancle(TimerId id);
