@@ -13,7 +13,9 @@
 
 #include <cstdlib>
 //#include"./tests/NioEventLoopTest.h"
-#include"./tests/ByteBufeTest.h"
+//#include"./tests/ByteBufeTest.h"
+//#include"./tests/echoServer.h"
+#include"./tests/echoClient.h"
 
 using namespace std;
 
@@ -21,8 +23,11 @@ int main(int argc, char** argv)
 {
 //    NioEventLoopTest test;
 //    test.nioEventLoopTestMain();
-    ByteBufeTest test;
-    test.byteBufeTestMain();
+//    ByteBufeTest test;
+//    test.byteBufeTestMain();
+//    echoServerMain();
+    echoClientMain();
+    
     
     return 0;
 }

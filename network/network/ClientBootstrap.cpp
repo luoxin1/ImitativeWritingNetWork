@@ -16,7 +16,7 @@ void setChannelCloseCallback(const NioSocketChannelPtr channel,const ChannelClos
 }
 
 ClientBootstrap::ClientBootstrap(NioEventLoop* eventLoop,
-	std::string& name,
+	std::string&& name,
 	const InetSocketAddress& remote)
 	:eventLoop_(eventLoop)
 	,name_(std::move(name))

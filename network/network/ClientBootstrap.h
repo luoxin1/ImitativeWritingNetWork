@@ -13,7 +13,7 @@ class ClientBootstrap :boost::noncopyable
 {
 public:
 	ClientBootstrap(NioEventLoop* eventLoop,
-		std::string& name,
+		std::string&& name,
 		const InetSocketAddress& remote);
 	~ClientBootstrap();
 
