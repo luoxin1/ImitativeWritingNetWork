@@ -120,19 +120,19 @@ public:
 		return static_cast<ev_ssize_t>(evbuffer_remove_buffer(evbuffer_, rhs.evbuffer_, readLen));
 	}
 
-	ev_ssize_t peekBytest(void* buf, size_t len) const
+	ev_ssize_t peekBytes(void* buf, size_t len) const
 	{
 		return static_cast<ev_ssize_t>(evbuffer_copyout(evbuffer_, buf, len));
 	}
 
-	ev_ssize_t peekBytest(Buffer& buf) const
+	ev_ssize_t peekBytes(Buffer& buf) const
 	{
 		size_t bytes = readalbeBytes();
 		buf.append(evbuffer_, bytes, true);
 		return static_cast<ev_ssize_t>(bytes);
 	}
 
-	ev_ssize_t peekBytest(Buffer& buf,size_t len) const
+	ev_ssize_t peekBytes(Buffer& buf,size_t len) const
 	{
 		size_t bytes = readalbeBytes();
 		size_t readLen = bytes  > len ? len : bytes;
@@ -140,7 +140,7 @@ public:
 		return static_cast<ev_ssize_t>(readLen);
 	}
 
-	ev_ssize_t peekBytest(std::string& data) const
+	ev_ssize_t peekBytes(std::string& data) const
 	{
 		size_t bytes = readalbeBytes();
 		size_t oldLen = data.size();
@@ -148,7 +148,7 @@ public:
 		return static_cast<ev_ssize_t>(evbuffer_copyout(evbuffer_,const_cast<char*>(data.data()+oldLen), bytes));
 	}
 
-	ev_ssize_t peekBytest(std::string& data,size_t len) const
+	ev_ssize_t peekBytes(std::string& data,size_t len) const
 	{
 		size_t bytes = readalbeBytes();
 		size_t readLen = bytes > len ? len : bytes;

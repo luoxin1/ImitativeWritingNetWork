@@ -20,8 +20,8 @@ public:
 	Buffer(const Buffer& rhs);
 	Buffer& operator=(const Buffer& rhs);
 
-	Buffer(const Buffer&& rhs);
-	Buffer& operator=(const Buffer&& rhs);
+	Buffer(Buffer&& rhs);
+	Buffer& operator=(Buffer&& rhs);
 
 	~Buffer();
 

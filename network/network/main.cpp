@@ -12,14 +12,17 @@
  */
 
 #include <cstdlib>
-#include"./tests/NioEventLoopTest.h"
+//#include"./tests/NioEventLoopTest.h"
+#include"./tests/ByteBufeTest.h"
 
 using namespace std;
 
-int main(int argc, char** argv) {
-    NioEventLoopTest test;
-    test.nioEventLoopTestMain();
-    
+int main(int argc, char** argv) 
+{
+//    NioEventLoopTest test;
+//    test.nioEventLoopTestMain();
+    ByteBufeTest test;
+    test.byteBufeTestMain();
     
     return 0;
 }

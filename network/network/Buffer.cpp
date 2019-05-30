@@ -31,7 +31,7 @@ Buffer::Buffer(size_t initSize, bool sustain)
 }
 
 Buffer::Buffer(const Buffer& rhs)
-	:buffer_(new char(rhs.capacity_))
+	:buffer_(new char[rhs.capacity_])
 	, capacity_(rhs.capacity_)
 	, sustain_(rhs.sustain_)
 	, initSize_(rhs.initSize_)
@@ -51,7 +51,7 @@ Buffer& Buffer::operator=(const Buffer& rhs)
 		{
 			delete[] buffer_;
 		}
-		buffer_ = (new char(rhs.capacity_));
+		buffer_ = (new char[rhs.capacity_]);
 		capacity_ = rhs.capacity_;
 		sustain_ = rhs.sustain_;
 		initSize_ = rhs.initSize_;
@@ -65,7 +65,7 @@ Buffer& Buffer::operator=(const Buffer& rhs)
 	return *this;
 }
 
-Buffer::Buffer(const Buffer&& rhs)
+Buffer::Buffer(Buffer&& rhs)
 	:buffer_(rhs.buffer_)
 	, capacity_(rhs.capacity_)
 	, sustain_(rhs.sustain_)
@@ -75,10 +75,10 @@ Buffer::Buffer(const Buffer&& rhs)
 	, readIndex_(rhs.readIndex_)
 	, notAlloc_(rhs.notAlloc_)
 {
-    memcpy(buffer_,rhs.buffer_,rhs.capacity_);
+    rhs.buffer_=NULL;
 }
 
-Buffer& Buffer::operator=(const Buffer&& rhs)
+Buffer& Buffer::operator=(Buffer&& rhs)
 {
 	if (this != &rhs)
 	{
@@ -94,7 +94,7 @@ Buffer& Buffer::operator=(const Buffer&& rhs)
 		beginIndex_ = rhs.beginIndex_;
 		readIndex_ = rhs.readIndex_;
 		notAlloc_ = rhs.notAlloc_;
-		memcpy(buffer_,rhs.buffer_,rhs.capacity_);
+		rhs.buffer_=NULL;
 	}
 
 	return *this;
@@ -109,6 +109,7 @@ Buffer::~Buffer()
 	if (buffer_!=NULL)
 	{
 		delete[] buffer_;
+                buffer_=NULL;
 	}
 }
 
