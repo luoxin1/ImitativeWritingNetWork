@@ -49,7 +49,10 @@ public:
 	static bool resolve(const std::string& hostname, InetSocketAddress* out);
 
 private:
+    union
+    {
 	struct sockaddr_in addr_;
 	struct sockaddr_in6 addr6_;
+    };
 };
 #endif

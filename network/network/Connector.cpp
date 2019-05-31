@@ -65,7 +65,7 @@ void Connector::reconnect()
 void Connector::disconnect()
 {
 	connect_ = false;
-	eventLoop_->execute(std::move(std::bind(&Connector::disconnect,this)));
+	eventLoop_->execute(std::move(boost::bind(&Connector::disconnectInLoop,this)));
 }
 
 void Connector::connecting()

@@ -235,9 +235,9 @@ TimerId NioEventLoop::schedualAfter(NioTask&& task, double delay)
 	return TimerId(timeSeq_++, ev);
 }
 
-TimerId NioEventLoop::schedualEvery(const NioTask&& task, double interval)
+TimerId NioEventLoop::schedualEvery(NioTask&& task, double interval)
 {
-        std::cout<<"schedualEvery(const NioTask&& task, double interval)"<<std::endl;
+        std::cout<<"schedualEvery(NioTask&& task, double interval)"<<std::endl;
 	Functor* fn = new Functor(std::move(task),true);
 	struct event* ev = event_new(base_, -1, EV_PERSIST, &Functor::excute, reinterpret_cast<void*>(fn));
 	assert(ev != NULL);

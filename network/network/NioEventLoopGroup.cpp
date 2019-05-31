@@ -1,5 +1,6 @@
 #include "NioEventLoopGroup.h"
 #include "NioEventLoopThread.h"
+#include<iostream>
 
 NioEventLoopGroup::NioEventLoopGroup(NioEventLoop* baseLoop, const std::string& nameArg, const ThreadInitCallback& cb)
 	:baseLoop_(baseLoop)
@@ -55,8 +56,10 @@ NioEventLoop* NioEventLoopGroup::next()
 
 NioEventLoop* NioEventLoopGroup::lightWeighted(LoadOption opt)
 {
+        std::cout<<"5555555555555"<<std::endl;
 	assert(started_);
 	NioEventLoop* loop = baseLoop_;
+        boost::lock_guard<boost::mutex> lock(mutex_);
 	if (!loops_.empty())
 	{
 		NioEventLoopPriorityQueue weightedLoops(loops_.begin(), loops_.end());

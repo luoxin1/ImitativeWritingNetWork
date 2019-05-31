@@ -25,7 +25,7 @@ public:
 		return *this;
 	}
 
-	Listener& newChannelCallback(const NewChannelCallback&& cb)
+	Listener& newChannelCallback(NewChannelCallback&& cb)
 	{
 		newChannel_ = std::move(cb);
 		return *this;

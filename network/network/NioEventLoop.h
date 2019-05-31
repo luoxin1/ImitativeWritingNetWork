@@ -44,7 +44,7 @@ public:
 
 	TimerId schedualAt(NioTask&& task, Timestamp time);
 	TimerId schedualAfter(NioTask&& task, double delay);
-	TimerId schedualEvery(const NioTask&& task, double interval);
+	TimerId schedualEvery(NioTask&& task, double interval);
 
 	void cancle(TimerId id);
 

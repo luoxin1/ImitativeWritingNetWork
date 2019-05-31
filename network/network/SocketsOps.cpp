@@ -6,19 +6,21 @@
 #include"Endian.h"
 #include<assert.h>
 
-const struct sockaddr* sockets::sockaddr_cast(const struct sockaddr_in* addr)
-{
-	return static_cast<const struct sockaddr*>(boost::implicit_cast<const void*>(addr));
-}
-
 const struct sockaddr* sockets::sockaddr_cast(const struct sockaddr_in6* addr)
 {
+        std::cout<<"4444444444444"<<std::endl;
 	return static_cast<const struct sockaddr*>(boost::implicit_cast<const void*>(addr));
 }
 
 struct sockaddr* sockets::sockaddr_cast(struct sockaddr_in6* addr)
 {
+        std::cout<<"333333333333"<<std::endl;
 	return static_cast<struct sockaddr*>(boost::implicit_cast<void*>(addr));
+}
+
+const struct sockaddr* sockets::sockaddr_cast(const struct sockaddr_in* addr)
+{
+	return static_cast<const struct sockaddr*>(boost::implicit_cast<const void*>(addr));
 }
 
 const struct sockaddr_in* sockets::sockaddr_in_cast(const struct sockaddr* addr)

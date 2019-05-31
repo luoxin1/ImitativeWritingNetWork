@@ -28,7 +28,7 @@ public:
 		return *this;
 	}
 
-	Connector& newChannelCallback(const NewChannelCallback&& cb)
+	Connector& newChannelCallback(NewChannelCallback&& cb)
 	{
 		newChannel_ = std::move(cb);
 		return *this;

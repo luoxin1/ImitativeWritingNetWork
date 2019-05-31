@@ -12,14 +12,14 @@ ServerBootstrap::ServerBootstrap(NioEventLoop* baseLoop,
 	:baseLoop_(baseLoop)
 	, name_(name)
 	, hostPort_(listenAddress.toIpPort())
+        , started_(false)
 	, address_(listenAddress)
-	, initChannel_(defaultInitChannel)
-	, started_(false)
-	, nextChannelId_(0)
-	, hodlers_()
-	, config_()
-	, lister_(new Listener(baseLoop,&config_))
+        , nextChannelId_(0)
+        , hodlers_()
+        , config_()
+        , lister_(new Listener(baseLoop,&config_))
 	, group_()
+        , initChannel_(defaultInitChannel)
 {
 	
 }

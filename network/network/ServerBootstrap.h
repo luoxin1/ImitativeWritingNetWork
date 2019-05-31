@@ -12,6 +12,7 @@
 #include "boost/atomic.hpp"
 #include "ChannelConfig.h"
 #include "NioEventLoopGroup.h"
+#include<iostream>
 
 class ServerBootstrap: boost::noncopyable
 {
@@ -36,7 +37,7 @@ public:
 		return hostPort_;
 	}
 	
-	const InetSocketAddress& listenAddress()
+	const InetSocketAddress& listenAddress() const
 	{
 		return address_;
 	}
@@ -49,9 +50,10 @@ public:
 		return *this;
 	}
 
-	ServerBootstrap& chanelInitCallback(const ChannelInitCallback&& cb) 
+	ServerBootstrap& chanelInitCallback(ChannelInitCallback&& cb) 
 	{
-		initChannel_ = cb;
+                std::cout<<"111111111111111"<<std::endl;
+		initChannel_ = std::move(cb);
 		return *this;
 	}
 

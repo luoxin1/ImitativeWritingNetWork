@@ -11,16 +11,16 @@ static const in_addr_t kInaddrLoopback = INADDR_LOOPBACK;
 static const in_addr_t kInaddrAny = INADDR_ANY;
 
 //BOOST_STATIC_ASSERTT(sizeof(InetSocketAddress) == sizeof(struct sockaddr_in6));
-//BOOST_STATIC_ASSERT(offsetof(sockaddr_in,sin_family)==0);
-//BOOST_STATIC_ASSERT(offsetof(sockaddr_in6,sin6_family)==0);
-//BOOST_STATIC_ASSERT(offsetof(sockaddr_in,sin_port)==2);
-//BOOST_STATIC_ASSERT(offsetof(sockaddr_in6,sin6_port)==2);
+BOOST_STATIC_ASSERT(offsetof(sockaddr_in,sin_family)==0);
+BOOST_STATIC_ASSERT(offsetof(sockaddr_in6,sin6_family)==0);
+BOOST_STATIC_ASSERT(offsetof(sockaddr_in,sin_port)==2);
+BOOST_STATIC_ASSERT(offsetof(sockaddr_in6,sin6_port)==2);
 
 
 InetSocketAddress::InetSocketAddress(uint16_t port , bool loopbackOnly , bool ipv6)
 {
-//	BOOST_STATIC_ASSERT(offsetof(InetSocketAddress, addr6_) == 0);
-//	BOOST_STATIC_ASSERT(offsetof(InetSocketAddress, addr_) == 0);
+	BOOST_STATIC_ASSERT(offsetof(InetSocketAddress, addr6_) == 0);
+	BOOST_STATIC_ASSERT(offsetof(InetSocketAddress, addr_) == 0);
 
 	if (ipv6)
 	{

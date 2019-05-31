@@ -5,16 +5,22 @@
 #include"ChannelConfig.h"
 #include <iostream>
 
+static const int kDefaultBackLog=128;
+
 Listener::Listener(NioEventLoop* eventLoop, ChannelConfig* config)
-	:newChannel_()
-	, eventLoop_(eventLoop)
+	: eventLoop_(eventLoop)
 	, config_(config)
 	, listening_(false)
 	, reuseable_(0)
-	, backlog_()
+	, backlog_(kDefaultBackLog)
 	, listener_(NULL)
+        , newChannel_()
 	, devnull_(::open("/dev/null", O_RDONLY | O_CLOEXEC))
 {
+    assert(eventLoop_!=NULL);
+    assert(config_!=NULL);
+    assert(devnull_>=0);
+    std::cout<<"Listener created"<<std::endl;
 }
 
 Listener::~Listener()
@@ -62,7 +68,7 @@ void Listener::listen(const InetSocketAddress& addr)
 
     config_->bind(evconnlistener_get_fd(listener_));
     evconnlistener_set_error_cb(listener_, exceptionCaught);
-    evconnlistener_enable(listener_);
+//    evconnlistener_enable(listener_);
 
     std::cout << "listening at address " << addr.toIpPort() << std::endl;
     
@@ -85,6 +91,6 @@ void Listener::exceptionCaught(struct evconnlistener* listener,void* privdata)
 		int listeningFd = static_cast<int>(evconnlistener_get_fd(listener));
 		self->devnull_ = accept(listeningFd, NULL, NULL);
 		close(self->devnull_);
-		self->devnull_ = open("dev/null", O_RDONLY | O_CLOEXEC);
+		self->devnull_ = open("/dev/null", O_RDONLY | O_CLOEXEC);
 	}
 }

@@ -86,10 +86,10 @@ private:
 
 void echoServerMain()
 {
-	std::cout << "start server " << CurrentThread::tid()<<" listen port is 10000" << std::endl;
+	std::cout << "start server "<<getpid() << " "<<CurrentThread::tid()<<" listen port is 10000" << std::endl;
 	NioEventLoop mainLoop;
 
-	EchoServer s(&mainLoop, 10000);
+	EchoServer s(&mainLoop, 10003);
 	s.start();
 
 	mainLoop.loop();

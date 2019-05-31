@@ -2,6 +2,7 @@
 #define __ENDIAN_H__
 #include<endian.h>
 #include <stdint.h>
+#include<iostream>
 
 namespace sockets
 {
@@ -30,15 +31,16 @@ namespace sockets
 		return be32toh(net32);
 	}
 
-	inline uint64_t networkToHost16(uint64_t net64)
+	inline uint64_t networkToHost64(uint64_t net64)
 	{
 		return be64toh(net64);
 	}
 
 	inline bool isMachineNetworkEndian()
 	{
+                std::cout<<"2222222222222"<<std::endl;
 		uint16_t number = 0x01;
-		return reinterpret_cast<uint8_t*>(&number) == 0x00;
+		return *reinterpret_cast<uint8_t*>(&number) == 0x00;
 	}
 }
 #endif // !
