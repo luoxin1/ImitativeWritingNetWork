@@ -89,13 +89,13 @@ public:
 
 		struct event_base* entrieBase() const 
 		{
-			selfEventLoop_->base_;
+                    return selfEventLoop_->base_;
 		}
 
 	private:
 		NioEventLoop* selfEventLoop_;
 	};
-
+        
 private:
 	void abortNotInLoopThread();
 

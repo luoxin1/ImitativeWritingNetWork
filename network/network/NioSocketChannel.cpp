@@ -31,6 +31,7 @@ void defaultState(const NioSocketChannelPtr& channel,IdleState idleStae)
 
 void defaultInitChannel(const ChannelInitailizerPtr& channelInitailizer)
 {
+        std::cout<<"ppppppppppppppppppppppp defaultInitChannel"<<std::endl;
 	channelInitailizer->channelActiveCallback(defaultChannelActive);
 	channelInitailizer->channelInactiveCallback(defaultChannelInActive);
 	channelInitailizer->messageCallback(defaultMessageReceived);
@@ -48,6 +49,7 @@ NioSocketChannel::NioSocketChannel(NioEventLoop* eventLoo,
 	,id_(id)
 	,name_(std::move(name))
 	,socket_(sockfd)
+        ,state_(kActiving)
 	,pipeline_(new ChannelPipeline(eventLoo,sockfd,0))
 	,remote_(remote)
 	,local_(local)
@@ -65,6 +67,7 @@ NioSocketChannel::~NioSocketChannel()
 
 NioSocketChannel& NioSocketChannel::channelActiveCallback(const ChannelActiveCallback& cb)
 {
+        std::cout<<"ooooooooooooooooooooo NioSocketChannel::channelActiveCallback"<<std::endl;
 	pipeline_->channelActiveCallback(cb);
 	return *this;
 }
@@ -93,31 +96,32 @@ NioSocketChannel& NioSocketChannel::channelCloseCallback(const ChannelCloseCallb
 	return *this;
 }
 
-NioSocketChannel& NioSocketChannel::channelActiveCallback(const ChannelActiveCallback&& cb)
+NioSocketChannel& NioSocketChannel::channelActiveCallback(ChannelActiveCallback&& cb)
 {
+        std::cout<<"8@@@@@@@@ NioSocketChannel::chanelInitCallback"<<std::endl;
 	pipeline_->channelActiveCallback(std::move(cb));
 	return *this;
 }
 
-NioSocketChannel& NioSocketChannel::channelInActiveCallback(const ChannelInActiveCallback&& cb)
+NioSocketChannel& NioSocketChannel::channelInActiveCallback(ChannelInActiveCallback&& cb)
 {
 	pipeline_->channelInActiveCallback(std::move(cb));
 	return *this;
 }
 
-NioSocketChannel& NioSocketChannel::messageCallback(const MessageCallback&& cb)
+NioSocketChannel& NioSocketChannel::messageCallback(MessageCallback&& cb)
 {
 	pipeline_->messageCallback(std::move(cb));
 	return *this;
 }
 
-NioSocketChannel& NioSocketChannel::idleStateCallback(const IdleStateCallback&& cb)
+NioSocketChannel& NioSocketChannel::idleStateCallback(IdleStateCallback&& cb)
 {
 	pipeline_->idleStateCallback(std::move(cb));
 	return *this;
 }
 
-NioSocketChannel& NioSocketChannel::channelCloseCallback(const ChannelCloseCallback&& cb)
+NioSocketChannel& NioSocketChannel::channelCloseCallback(ChannelCloseCallback&& cb)
 {
 	pipeline_->channelCloseCallback(std::move(cb));
 	return *this;
@@ -282,6 +286,7 @@ void NioSocketChannel::writeAndFlush(std::string* data)
 	if (state_ == kActive)
 	{
 		std::string* safe = new std::string();
+                safe->swap(*data);
 		if (eventLoop_->inEventLoop())
 		{
 			writeAndFlushInLoop(safe, WritePromiseCallbackPtr());
@@ -299,7 +304,7 @@ void NioSocketChannel::writeAndFlush(Buffer&& buf, WritePromiseCallback&& cb)
 {
 	if (state_ == kActive)
 	{
-		WritePromiseCallbackPtr promise(new WritePromiseCallback(cb));
+		WritePromiseCallbackPtr promise(new WritePromiseCallback(std::move(cb)));
 		Buffer* safe = new Buffer(std::move(buf));
 		if (eventLoop_->inEventLoop())
 		{
@@ -308,7 +313,7 @@ void NioSocketChannel::writeAndFlush(Buffer&& buf, WritePromiseCallback&& cb)
 		else
 		{
 			eventLoop_->execute(std::move(boost::bind<void, NioSocketChannel, 
-                                Buffer*, const WritePromiseCallbackPtr&>(&NioSocketChannel::writeAndFlushInLoop, this, safe, WritePromiseCallbackPtr())));
+                                Buffer*, const WritePromiseCallbackPtr&>(&NioSocketChannel::writeAndFlushInLoop, this, safe, promise)));
 		}
 	}
 	else
@@ -321,7 +326,7 @@ void NioSocketChannel::writeAndFlush(std::string&& data, WritePromiseCallback&& 
 {
 	if (state_ == kActive)
 	{
-		WritePromiseCallbackPtr promise(new WritePromiseCallback(cb));
+		WritePromiseCallbackPtr promise(new WritePromiseCallback(std::move(cb)));
 		std::string* safe = new std::string(std::move(data));
 		if (eventLoop_->inEventLoop())
 		{
@@ -330,7 +335,7 @@ void NioSocketChannel::writeAndFlush(std::string&& data, WritePromiseCallback&& 
 		else
 		{
 			eventLoop_->execute(std::move(boost::bind<void, NioSocketChannel, 
-                                std::string*, const WritePromiseCallbackPtr&>(&NioSocketChannel::writeAndFlushInLoop, this, safe, WritePromiseCallbackPtr())));
+                                std::string*, const WritePromiseCallbackPtr&>(&NioSocketChannel::writeAndFlushInLoop, this, safe, promise)));
 		}
 	}
 	else
@@ -343,7 +348,7 @@ void NioSocketChannel::writeAndFlush(std::string* data, WritePromiseCallback&& c
 {
 	if (state_ == kActive)
 	{
-		WritePromiseCallbackPtr promise(new WritePromiseCallback(cb));
+		WritePromiseCallbackPtr promise(new WritePromiseCallback(std::move(cb)));
 		std::string* safe = new std::string();
 		safe->swap(*data);
 		if (eventLoop_->inEventLoop())
@@ -353,7 +358,7 @@ void NioSocketChannel::writeAndFlush(std::string* data, WritePromiseCallback&& c
 		else
 		{
 			eventLoop_->execute(std::move(boost::bind<void, NioSocketChannel,
-                                std::string*, const WritePromiseCallbackPtr&>(&NioSocketChannel::writeAndFlushInLoop, this, safe, WritePromiseCallbackPtr())));
+                                std::string*, const WritePromiseCallbackPtr&>(&NioSocketChannel::writeAndFlushInLoop, this, safe, promise)));
 		}
 	}
 	else
@@ -400,7 +405,7 @@ void NioSocketChannel::writeAndFlush(Buffer* buf, WritePromiseCallback&& cb)
 {
 	if (state_ == kActive)
 	{
-		WritePromiseCallbackPtr promise(new WritePromiseCallback(cb));
+		WritePromiseCallbackPtr promise(new WritePromiseCallback(std::move(cb)));
 		Buffer* safe = new Buffer();
 		safe->swap(*buf);
 		if (eventLoop_->inEventLoop())
@@ -409,7 +414,7 @@ void NioSocketChannel::writeAndFlush(Buffer* buf, WritePromiseCallback&& cb)
 		}
 		else
 		{
-			eventLoop_->execute(std::move(boost::bind<void, NioSocketChannel, Buffer*, const WritePromiseCallbackPtr&>(&NioSocketChannel::writeAndFlushInLoop, this, safe, WritePromiseCallbackPtr())));
+			eventLoop_->execute(std::move(boost::bind<void, NioSocketChannel, Buffer*, const WritePromiseCallbackPtr&>(&NioSocketChannel::writeAndFlushInLoop, this, safe, promise)));
 		}
 	}
 }

@@ -7,6 +7,7 @@
 #include "boost/atomic.hpp"
 #include "InetSocketAddress.h"
 #include "ChannelOption.h"
+#include<iostream>
 
 class NioEventLoop;
 class ChannelConfig;
@@ -21,12 +22,14 @@ public:
 
 	Listener& newChannelCallback(const NewChannelCallback& cb)
 	{
+                std::cout<<"------------------luoxin 456"<<std::endl;
 		newChannel_ = cb;
 		return *this;
 	}
 
 	Listener& newChannelCallback(NewChannelCallback&& cb)
 	{
+                std::cout<<"2@@@@@@@@ Listener& newChannelCallback"<<std::endl;
 		newChannel_ = std::move(cb);
 		return *this;
 	}

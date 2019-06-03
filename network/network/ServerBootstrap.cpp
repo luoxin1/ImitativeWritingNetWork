@@ -19,7 +19,7 @@ ServerBootstrap::ServerBootstrap(NioEventLoop* baseLoop,
         , config_()
         , lister_(new Listener(baseLoop,&config_))
 	, group_()
-        , initChannel_(defaultInitChannel)
+        , initChannel_(defaultInitChannel)//最开始指向的是这里，后来发生了变化
 {
 	
 }
@@ -96,6 +96,8 @@ void ServerBootstrap::start()
 	setupChannelHolderMaps();
 
 	config_.bind(lister_.get());
+        
+        std::cout<<"1@@@@@@@@@ ServerBootstrap::start()"<<std::endl;
 	lister_->newChannelCallback(std::move(boost::bind(&ServerBootstrap::newChannel,this,_1,_2)));
 	baseLoop_->execute(std::move(boost::bind(&Listener::listen,get_pointer(lister_),address_)));
 }
@@ -120,6 +122,7 @@ void ServerBootstrap::setupChannelHolderMaps()
 
 void ServerBootstrap::newChannel(evutil_socket_t sockfd, const InetSocketAddress& remote)
 {
+        std::cout<<"5@@@@@@@@ ServerBootstrap::newChannel"<<std::endl;
 	NioEventLoop* loop = group_->lightWeighted(NioEventLoop::kAdd);
 	loop->execute(std::move(boost::bind(&ServerBootstrap::newChannelLoop,this,loop,sockfd,remote)));
 }
@@ -147,6 +150,8 @@ void ServerBootstrap::newChannelLoop(NioEventLoop* eventLoop, evutil_socket_t so
 
 	config_.bind(channel.get());
 	channel->channelCloseCallback(std::move(boost::bind(&ServerBootstrap::removeChannel,this,_1)));
+        
+        std::cout<<"6@@@@@@@@ ServerBootstrap::newChannelLoop"<<std::endl;
 	initChannel_(ChannelInitailizerPtr(new ChannelInitailizer(channel)));
 
 	holder.channels_.insert(std::move(std::make_pair(channelId,channel)));

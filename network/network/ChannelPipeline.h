@@ -48,31 +48,31 @@ public:
 		return *this;
 	}
 
-	ChannelPipeline& channelActiveCallback(const ChannelActiveCallback&& cb)
+	ChannelPipeline& channelActiveCallback(ChannelActiveCallback&& cb)
 	{
 		channelActive_ = std::move(cb);
 		return *this;
 	}
 
-	ChannelPipeline& channelInActiveCallback(const ChannelInActiveCallback&& cb)
+	ChannelPipeline& channelInActiveCallback(ChannelInActiveCallback&& cb)
 	{
 		channelInActive_ = std::move(cb);
 		return *this;
 	}
 
-	ChannelPipeline& messageCallback(const MessageCallback&& cb)
+	ChannelPipeline& messageCallback(MessageCallback&& cb)
 	{
 		messageReceived_ = std::move(cb);
 		return *this;
 	}
 
-	ChannelPipeline& idleStateCallback(const IdleStateCallback&& cb)
+	ChannelPipeline& idleStateCallback(IdleStateCallback&& cb)
 	{
 		idleState_ = std::move(cb);
 		return *this;
 	}
 
-	ChannelPipeline& channelCloseCallback(const ChannelCloseCallback&& cb)
+	ChannelPipeline& channelCloseCallback(ChannelCloseCallback&& cb)
 	{
 		channelClose_ = std::move(cb);
 		return *this;
@@ -118,21 +118,15 @@ private:
 	
 private:
 	typedef std::pair<int, int> OptionPair;
-	Bytebuf input_;
+	NioEventLoop* eventLoop_;
+        
+        struct bufferevent* underlying_;
+        Bytebuf input_;
 	Bytebuf output_;
 
-	ChannelActiveCallback channelActive_;
-	ChannelInActiveCallback channelInActive_;
-	MessageCallback messageReceived_;
-	IdleStateCallback idleState_;
-	ChannelCloseCallback channelClose_;
-
-	NioEventLoop* eventLoop_;
-	struct bufferevent* underlying_;
-
-	OptionPair readWaterMark_;
+        OptionPair readWaterMark_;
 	OptionPair idleStateTimeouts_;
-
+        
 	std::deque<WritePromiseCallbackPtr> writePromis_;
 
 	boost::weak_ptr<ChannelPipeline> self_;
@@ -140,6 +134,11 @@ private:
 
 	std::map<IdleState, WeakChannelEntryPtr> interestIdles_;
 
+        ChannelActiveCallback channelActive_;
+	ChannelInActiveCallback channelInActive_;
+	MessageCallback messageReceived_;
+	IdleStateCallback idleState_;
+	ChannelCloseCallback channelClose_;
 };
 
 typedef boost::shared_ptr<ChannelPipeline> ChannelPipelinePtr;

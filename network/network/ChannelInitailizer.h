@@ -40,22 +40,22 @@ public:
 		ownerChannel_->idleStateCallback(cb);
 	}
 
-	void channelActiveCallback(const ChannelActiveCallback&& cb) const
+	void channelActiveCallback(ChannelActiveCallback&& cb) const
 	{
 		ownerChannel_->channelActiveCallback(std::move(cb));
 	}
 
-	void channelInactiveCallback(const ChannelInActiveCallback&& cb) const
+	void channelInactiveCallback(ChannelInActiveCallback&& cb) const
 	{
 		ownerChannel_->channelInActiveCallback(std::move(cb));
 	}
 
-	void messageCallback(const MessageCallback&& cb) const
+	void messageCallback(MessageCallback&& cb) const
 	{
 		ownerChannel_->messageCallback(std::move(cb));
 	}
 
-	void idleStateCallback(const IdleStateCallback&& cb) const
+	void idleStateCallback(IdleStateCallback&& cb) const
 	{
 		ownerChannel_->idleStateCallback(std::move(cb));
 	}

@@ -19,15 +19,6 @@ class NioSocketChannel:
 public:
 	~NioSocketChannel();
 
-private:
-	NioSocketChannel(NioEventLoop* eventLoo,
-		size_t id,
-		std::string&& name,
-		evutil_socket_t sockfd,
-		InetSocketAddress remote,
-		InetSocketAddress local,
-		IdlChanelInspector* inspector);
-
 public:
 	class Builder
 	{
@@ -108,11 +99,11 @@ public:
 	NioSocketChannel& idleStateCallback(const IdleStateCallback& cb);
 	NioSocketChannel& channelCloseCallback(const ChannelCloseCallback& cb);
 
-	NioSocketChannel& channelActiveCallback(const ChannelActiveCallback&& cb);
-	NioSocketChannel& channelInActiveCallback(const ChannelInActiveCallback&& cb);
-	NioSocketChannel& messageCallback(const MessageCallback&& cb);
-	NioSocketChannel& idleStateCallback(const IdleStateCallback&& cb);
-	NioSocketChannel& channelCloseCallback(const ChannelCloseCallback&& cb);
+	NioSocketChannel& channelActiveCallback(ChannelActiveCallback&& cb);
+	NioSocketChannel& channelInActiveCallback(ChannelInActiveCallback&& cb);
+	NioSocketChannel& messageCallback(MessageCallback&& cb);
+	NioSocketChannel& idleStateCallback(IdleStateCallback&& cb);
+	NioSocketChannel& channelCloseCallback(ChannelCloseCallback&& cb);
 
 	NioEventLoop* internalLoop() const
 	{
@@ -187,8 +178,17 @@ public:
 	void destroyed();
 
 	friend class ChannelPipeline;
-	friend class ChannelEntry;
+	friend struct ChannelEntry;
 
+private:
+	NioSocketChannel(NioEventLoop* eventLoo,
+		size_t id,
+		std::string&& name,
+		evutil_socket_t sockfd,
+		InetSocketAddress remote,
+		InetSocketAddress local,
+		IdlChanelInspector* inspector);
+        
 private:
 	enum ChannelState
 	{

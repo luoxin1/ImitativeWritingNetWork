@@ -68,15 +68,15 @@ void Listener::listen(const InetSocketAddress& addr)
 
     config_->bind(evconnlistener_get_fd(listener_));
     evconnlistener_set_error_cb(listener_, exceptionCaught);
-//    evconnlistener_enable(listener_);
+    evconnlistener_enable(listener_);
 
-    std::cout << "listening at address " << addr.toIpPort() << std::endl;
+    std::cout << "3@@@@@@@@ listening at address " << addr.toIpPort() << std::endl;
     
 }
 
-
 void Listener::newChannel(struct evconnlistener* listener, evutil_socket_t sockfd, struct sockaddr* address, int socklen, void* privadata)
 {
+        std::cout<<"4 @@@@@@@@@@@@@@ static Listener::newChannel..."<<std::endl;
 	Listener* self = static_cast<Listener*>(privadata);
 	self->newChannel_(sockfd, InetSocketAddress(*sockets::sockaddr_in_cast(address)));
 }

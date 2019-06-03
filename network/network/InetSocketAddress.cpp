@@ -19,8 +19,8 @@ BOOST_STATIC_ASSERT(offsetof(sockaddr_in6,sin6_port)==2);
 
 InetSocketAddress::InetSocketAddress(uint16_t port , bool loopbackOnly , bool ipv6)
 {
-	BOOST_STATIC_ASSERT(offsetof(InetSocketAddress, addr6_) == 0);
-	BOOST_STATIC_ASSERT(offsetof(InetSocketAddress, addr_) == 0);
+//	BOOST_STATIC_ASSERT(offsetof(InetSocketAddress, addr6_) == 0);
+//	BOOST_STATIC_ASSERT(offsetof(InetSocketAddress, addr_) == 0);
 
 	if (ipv6)
 	{

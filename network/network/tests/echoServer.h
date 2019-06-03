@@ -19,7 +19,7 @@ public:
 		bootstrap_.group(group_)
 			.chanelInitCallback([this](const ChannelInitailizerPtr& channelInitailizer)
 		{
-			//typedef boost::function<void(const NioSocketChannelPtr& channelInitailizerPtr)> ChannelActiveCallback;
+                        std::cout<<"7@@@@@@@@ chanelInitCallback"<<std::endl;
 			channelInitailizer->channelActiveCallback(boost::bind(&EchoServer::channelActive,this,_1));
 			channelInitailizer->channelInactiveCallback(boost::bind(&EchoServer::channelInActive, this, _1));
 			channelInitailizer->messageCallback(boost::bind(&EchoServer::messageArrived, this, _1, _2, _3));
@@ -37,7 +37,7 @@ public:
 
 	void channelActive(const NioSocketChannelPtr& channel)
 	{
-		std::cout << "channelActive" << channel->channelName() << std::endl;
+		std::cout << "channelActive " << channel->channelName() << std::endl;
 	}
 
 	void channelInActive(const NioSocketChannelPtr& channel)

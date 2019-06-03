@@ -52,7 +52,7 @@ public:
 
 	ServerBootstrap& chanelInitCallback(ChannelInitCallback&& cb) 
 	{
-                std::cout<<"111111111111111"<<std::endl;
+                std::cout<<"0@@@@@@@@ chanelInitCallback"<<std::endl;
 		initChannel_ = std::move(cb);
 		return *this;
 	}

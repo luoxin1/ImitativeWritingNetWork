@@ -8,13 +8,11 @@
 
 const struct sockaddr* sockets::sockaddr_cast(const struct sockaddr_in6* addr)
 {
-        std::cout<<"4444444444444"<<std::endl;
 	return static_cast<const struct sockaddr*>(boost::implicit_cast<const void*>(addr));
 }
 
 struct sockaddr* sockets::sockaddr_cast(struct sockaddr_in6* addr)
 {
-        std::cout<<"333333333333"<<std::endl;
 	return static_cast<struct sockaddr*>(boost::implicit_cast<void*>(addr));
 }
 
@@ -82,6 +80,7 @@ void sockets::toIp(char* buf, size_t size, const struct sockaddr* addr)
 
 void sockets::fromIpPort(const char* ip, uint16_t port, struct sockaddr_in* addr)
 {
+        std::cout<<"66666666661"<<std::endl;
 	addr->sin_family= AF_INET;
 	addr->sin_port = hostToNetwork16(port);
 	if (inet_pton(AF_INET,ip,&addr->sin_addr) <=0 )
@@ -92,6 +91,7 @@ void sockets::fromIpPort(const char* ip, uint16_t port, struct sockaddr_in* addr
 
 void sockets::fromIpPort(const char* ip, uint16_t port, struct sockaddr_in6* addr)
 {
+    std::cout<<"77777777777"<<std::endl;
 	addr->sin6_family = AF_INET6;
 	addr->sin6_port = hostToNetwork16(port);
 	if (inet_pton(AF_INET6, ip, &addr->sin6_addr) <= 0)
