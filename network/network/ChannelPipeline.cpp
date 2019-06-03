@@ -49,8 +49,6 @@ ChannelPipeline& ChannelPipeline::option(ChannelOption opt, int optval)
 	case OPT_ALLIDELRTIMEOUT:
 		interestIdles_.insert(std::make_pair(ALL_IDLE, WeakChannelEntryPtr()));
 		break;
-	case NUM_CHANNELOPTIONS:
-		break;
 	default:
 		break;
 	}
@@ -59,6 +57,7 @@ ChannelPipeline& ChannelPipeline::option(ChannelOption opt, int optval)
 
 void ChannelPipeline::tie(const NioSocketChannelPtr& selfChannel)
 {
+        std::cout<<"10@@@@@@@@ ChannelPipeline::tie bufferevent_setcb"<<std::endl;
 	self_ = shared_from_this();
 	selfChannel_ = selfChannel;
 	std::for_each(interestIdles_.begin(), interestIdles_.end(), [&selfChannel](std::pair<const IdleState, WeakChannelEntryPtr>& it)
@@ -72,6 +71,7 @@ void ChannelPipeline::tie(const NioSocketChannelPtr& selfChannel)
 
 void ChannelPipeline::enableRead()
 {
+        std::cout<<"8@@@@@@@@ ChannelPipeline::enableRead"<<std::endl;
 	if (readWaterMark_.first < readWaterMark_.second && readWaterMark_.second >= 0)
 	{
 		bufferevent_setwatermark(underlying_, EV_READ, readWaterMark_.first, readWaterMark_.second);
@@ -122,6 +122,7 @@ bool ChannelPipeline::isNonEvent()
 
 void ChannelPipeline::channelActive(const NioSocketChannelPtr& channel)
 {
+        std::cout<<"11@@@@@@@@ ChannelPipeline::channelActive"<<std::endl;
 	channelActive_(channel);
 }
 
@@ -149,6 +150,7 @@ void ChannelPipeline::exceptionCaught(const NioSocketChannelPtr& channel, bool i
 		{
 			(*promise)(channel, false);
 		});
+                writePromis_.clear();
 	}
 	channel->close();
 }
@@ -159,6 +161,7 @@ void ChannelPipeline::messageReceived(struct bufferevent* be, void* privdata)
 	ChannelPipelinePtr self(pipeline->lock());
 	if (self)
 	{
+                std::cout<<"12 ChannelPipeline::messageReceived"<<std::endl;
 		NioSocketChannelPtr selfChannel(self->selfChannel_.lock());
 		self->messageReceived_(selfChannel, self->input_, self->eventLoop_->pollReturnTime());
 
@@ -179,7 +182,7 @@ void ChannelPipeline::writePromise(struct bufferevent* be, void* privdata)
 			std::deque<WritePromiseCallbackPtr>& promises = self->writePromis_;
 			std::for_each(promises.begin(), promises.end(), [&selfChannel](const WritePromiseCallbackPtr& promise)
 			{
-				(*promise)(selfChannel, false);
+				(*promise)(selfChannel, true);
 			});
 			promises.clear();
 		}
